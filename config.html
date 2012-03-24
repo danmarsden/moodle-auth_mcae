@@ -13,6 +13,12 @@
 	if (!isset($config->delim)) {
 	    $config->delim = 'CR+LF';
 	}
+	if (!isset($config->donttouchusers)) {
+	    $config->donttouchusers = '';
+	}
+	if (!isset($config->enableunenrol)) {
+	    $config->enableunenrol = 0;
+	}
 
 ?>
 <table cellspacing="0" cellpadding="5" border="0">
@@ -30,12 +36,6 @@
         ?>
     </td>
     <td>
-        <?php
-
-//        print_string('auth_imaphost', 'auth_imap');
-//        print_string('auth_multiplehosts', 'auth');
-
-        ?>
     </td>
 </tr>
 
@@ -70,7 +70,7 @@
 
         ?>
     </td>
-    <td><?php //print_string('auth_imaptype', 'auth_imap') ?></td>
+    <td></td>
 </tr>
 
 <tr valign="top">
@@ -85,9 +85,18 @@
 
         ?>
     </td>
-    <td><?php //print_string('auth_imapport', 'auth_imap') ?></td>
+    <td></td>
 </tr>
-
+<tr>
+    <td align="right"><?php print_string('auth_donttouchusers', 'auth_mcae') ?>: </td>
+    <td><textarea name="donttouchusers" rows="10" cols="60"><?php echo $config->donttouchusers ?></textarea></td>
+    <td><?php print_string('auth_donttouchusers_help', 'auth_mcae') ?></td>
+</tr>
+<tr>
+    <td align="right"></td>
+    <td><input type="checkbox" name="enableunenrol" value="1" <?php if ($config->enableunenrol == 1) {echo 'checked';} ?>> <?php print_string('auth_enableunenrol', 'auth_mcae') ?></td>
+    <td></td>
+</tr>
 <?php
 
 print_auth_lock_options('mcae', $user_fields, get_string('auth_fieldlocks_help', 'auth'), false, false);
