@@ -1,0 +1,96 @@
+<?php
+
+// set to defaults if undefined
+	if (!isset($config->mainrule_fld)) {
+	    $config->mainrule_fld = '%faculty[%form] %spec (%group)';
+	}
+	if (!isset($config->secondrule_fld)) {
+	    $config->secondrule_fld = 'n/a';
+	}
+	if (!isset($config->replace_arr)) {
+	    $config->replace_arr = '';
+	}
+	if (!isset($config->delim)) {
+	    $config->delim = 'CR+LF';
+	}
+
+?>
+<table cellspacing="0" cellpadding="5" border="0">
+
+<tr valign="top">
+    <td align="right"><?php print_string('auth_mainrule_fld', 'auth_mcae') ?>: </td>
+    <td>
+        <textarea name="mainrule_fld" rows="10" cols="60"><?php echo $config->mainrule_fld ?></textarea>
+        <?php
+
+        if (isset($err['mainrule_fld'])) {
+            echo $OUTPUT->error_text($err['mainrule_fld']);
+        }
+
+        ?>
+    </td>
+    <td>
+        <?php
+
+//        print_string('auth_imaphost', 'auth_imap');
+//        print_string('auth_multiplehosts', 'auth');
+
+        ?>
+    </td>
+</tr>
+
+<tr valign="top">
+    <td align="right"><?php print_string('auth_delim', 'auth_mcae') ?>: </td>
+    <td>
+	<select name="delim">
+              <option <?php if ($config->delim == 'CR+LF'){echo 'selected';}; ?> value="CR+LF">CR+LF</option>
+              <option <?php if ($config->delim == 'CR'){echo 'selected';}; ?> value="CR">CR</option>
+              <option <?php if ($config->delim == 'LF'){echo 'selected';}; ?> value="LF">LF</option>
+        </select>
+        <?php
+
+        if (isset($err['delim'])) {
+            echo $OUTPUT->error_text($err['delim']);
+        }
+
+        ?>
+    </td>
+    <td><?php print_string('auth_delim_help', 'auth_mcae') ?></td>
+</tr>
+
+<tr valign="top">
+    <td align="right"><?php print_string('auth_secondrule_fld', 'auth_mcae') ?>: </td>
+    <td>
+	<input name="secondrule_fld" type="text" size="30" value="<?php echo $config->secondrule_fld ?>" />
+        <?php
+
+        if (isset($err['secondrule_fld'])) {
+            echo $OUTPUT->error_text($err['secondrule_fld']);
+        }
+
+        ?>
+    </td>
+    <td><?php //print_string('auth_imaptype', 'auth_imap') ?></td>
+</tr>
+
+<tr valign="top">
+    <td align="right"><?php print_string('auth_replace_arr', 'auth_mcae') ?>: </td>
+    <td>
+        <textarea name="replace_arr" rows="10" cols="60"><?php echo $config->replace_arr ?></textarea>
+        <?php
+
+        if (isset($err['replace_arr'])) {
+            echo $OUTPUT->error_text($err['replace_arr']);
+        }
+
+        ?>
+    </td>
+    <td><?php //print_string('auth_imapport', 'auth_imap') ?></td>
+</tr>
+
+<?php
+
+print_auth_lock_options('mcae', $user_fields, get_string('auth_fieldlocks_help', 'auth'), false, false);
+
+?>
+</table>
