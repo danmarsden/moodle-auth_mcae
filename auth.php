@@ -173,6 +173,8 @@ class auth_plugin_mcae extends auth_plugin_base {
         set_config('secondrule_fld', $config->secondrule_fld, 'auth/mcae');
         set_config('replace_arr', $config->replace_arr, 'auth/mcae');
         set_config('delim', $config->delim, 'auth/mcae');
+        set_config('donttouchusers', $config->donttouchusers, 'auth/mcae');
+        set_config('enableunenrol', $config->enableunenrol, 'auth/mcae');
 
         return true;
     }
@@ -275,6 +277,9 @@ class auth_plugin_mcae extends auth_plugin_base {
 //        $newcohort->idnumber = "auto_" . substr($cohortname, 0, 20) . "_" . date("d-m-Y");
                 $newcohort->description = "created ". date("d-m-Y");
                 $newcohort->contextid = $context->id;
+                if ($this->config->enableunenrol == 1) {
+                    $newcohort->component = "auth_mcae";
+                }
                 $cid = cohort_add_cohort($newcohort);
                 cohort_add_member($cid, $user->id);
                 add_to_log(SITEID, 'user', 'Added to cohort ID ' . $cid, "view.php?id=$user->id&course=".SITEID, $user->id, 0, $user->id);
