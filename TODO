@@ -3,3 +3,5 @@ TODO!!!
 2. add unenrol function 
 /this will disable moodle cohort edit and assign pages /
 
+3. create cohort converter (set component to 'auth_mcae')
+4. create cohort members view page
