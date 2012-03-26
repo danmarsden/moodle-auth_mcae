@@ -205,8 +205,16 @@ class auth_plugin_mcae extends auth_plugin_base {
 
         $context = get_context_instance(CONTEXT_SYSTEM);
         $uid = $user->id;
+        
+        $ignore = explode(",",$this->config->donttouchusers);
+        
+        
 // ********************** Get COHORTS data
-        $cohorts = $DB->get_records('cohort', array('contextid'=>$context->id));
+        $clause = array('contextid'=>$context->id)
+        if ($this->config->enableunenrol == 1) {
+            $clause['component'] = 'auth_mcae';
+        }
+        $cohorts = $DB->get_records('cohort', $clause);
 
         $cohorts_list = array();
         foreach($cohorts as $cohort) {
