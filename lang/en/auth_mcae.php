@@ -34,5 +34,5 @@ $string['auth_delim'] = 'Delimiter';
 $string['auth_delim_help'] = 'Different OS use different delimiters (end of line).<br>In Windows it`s usually CR+LF<br>In Linux - LF<br>etc.<br>If the module does not work, try to change this value.';
 
 $string['auth_donttouchusers'] = 'Ignore users';
-$string['auth_donttouchusers_help'] = 'Comma separated values';
+$string['auth_donttouchusers_help'] = 'Comma separated usernames.';
 $string['auth_enableunenrol'] = 'Enable / Disable automatic unenrol';
