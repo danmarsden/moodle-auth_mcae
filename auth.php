@@ -167,7 +167,12 @@ class auth_plugin_mcae extends auth_plugin_base {
 	if (!isset($config->delim)) {
 	    $config->delim = 'CR+LF';
 	}
-
+	if (!isset($config->donttouchusers)) {
+	    $config->donttouchusers = '';
+	}
+	if (!isset($config->enableunenrol)) {
+	    $config->enableunenrol = 0;
+	}
         // save settings
         set_config('mainrule_fld', $config->mainrule_fld, 'auth/mcae');
         set_config('secondrule_fld', $config->secondrule_fld, 'auth/mcae');
@@ -207,7 +212,9 @@ class auth_plugin_mcae extends auth_plugin_base {
         $uid = $user->id;
         
         $ignore = explode(",",$this->config->donttouchusers);
-        
+        if (!empty($ignore) AND array_search($username, $ignore)) {
+            continue;
+        }
         
 // ********************** Get COHORTS data
         $clause = array('contextid'=>$context->id)
