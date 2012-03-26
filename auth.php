@@ -210,11 +210,15 @@ class auth_plugin_mcae extends auth_plugin_base {
 
         $context = get_context_instance(CONTEXT_SYSTEM);
         $uid = $user->id;
-        
+        // Ignore users from don't_touch list
         $ignore = explode(",",$this->config->donttouchusers);
         if (!empty($ignore) AND array_search($username, $ignore)) {
             continue;
-        }
+        };
+        // Ignore guests
+        if ($uid < 2){
+            continue;
+        };
         
 // ********************** Get COHORTS data
         $clause = array('contextid'=>$context->id)
@@ -229,6 +233,7 @@ class auth_plugin_mcae extends auth_plugin_base {
 	    $cname = format_string($cohort->name);
             $cohorts_list[$cid] = $cname;
         }
+    
 // ********************** Get advanced user data
 //    $customfld = profile_user_record($uid);
 
@@ -271,6 +276,8 @@ class auth_plugin_mcae extends auth_plugin_base {
         } else {
             return; //Empty mainrule
         };
+        
+        $processed = array();
 
         foreach ($cohorts_arr as $cohort) {
             $cohortname = strtr($cohort, $cust_arr);
@@ -298,12 +305,26 @@ class auth_plugin_mcae extends auth_plugin_base {
                 $newcohort->contextid = $context->id;
                 if ($this->config->enableunenrol == 1) {
                     $newcohort->component = "auth_mcae";
-                }
+                };
                 $cid = cohort_add_cohort($newcohort);
                 cohort_add_member($cid, $user->id);
                 add_to_log(SITEID, 'user', 'Added to cohort ID ' . $cid, "view.php?id=$user->id&course=".SITEID, $user->id, 0, $user->id);
             };
+            $processed[] = $cid;
         };
+        //Unenrol user
+        if ($this->config->enableunenrol == 1) {
+        //List of cohorts where this user enrolled
+            $sql = "SELECT c.id AS cid FROM {cohort} c JOIN {cohort_members} cm ON cm.cohortid = c.id WHERE c.component = 'auth_mcae' AND cm.uid = $uid";
+            $enrolledcohorts = $DB->get_records_sql($sql);
+            foreach ($enrolledcohorts as $ec) {
+                if(!array_search($ec->cid, $processed)) {
+                    cohort_remove_member($ec->cid, $uid);
+                    add_to_log(SITEID, 'user', 'Removed from cohort ID ' . $ec->cid, "view.php?id=$user->id&course=".SITEID, $user->id, 0, $user->id);
+                };
+            };
+        };
+
     }
 
 }
