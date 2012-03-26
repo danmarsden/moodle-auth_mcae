@@ -16,15 +16,15 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Strings for component 'auth_manual', language 'en', branch 'MOODLE_20_STABLE'
+ * Strings for component 'auth_mcae', language 'ru'
  *
- * @package   auth_manual
- * @copyright 1999 onwards Martin Dougiamas  {@link http://moodle.com}
+ * @package   auth_mcae
+ * @copyright 
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['auth_mcaedescription'] = 'Добавляет возможность автоматического зачисления в Cohorts';
-$string['pluginname'] = 'Автматическое зачисление в Cohorts';
+$string['auth_mcaedescription'] = 'Добавляет возможность автоматического зачисления в глобальные группы';
+$string['pluginname'] = 'Автматическое зачисление в глобальные группы';
 $string['auth_fieldlocks_help'] = ' ';
 
 $string['auth_mainrule_fld'] = 'Шаблон названия группы (Массив, каждый элемент с новой строки.)';
@@ -33,3 +33,7 @@ $string['auth_replace_arr'] = 'Заменители текста (Массив, 
 
 $string['auth_delim'] = 'Конец строки (EOL)';
 $string['auth_delim_help'] = 'В разных ОС используются разные символы конца строки.<br>В Windows - CR+LF<br>В Linux - LF<br>и т. д.<br>Если модуль не работает, попробуйте изменить это значение.';
+
+$string['auth_donttouchusers'] = 'Игнорировать пользователей';
+$string['auth_donttouchusers_help'] = 'Введите имена пользователей через запятую.';
+$string['auth_enableunenrol'] = 'Включить автоматическое удаление из гг.';
