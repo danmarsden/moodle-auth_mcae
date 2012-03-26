@@ -229,6 +229,10 @@ class auth_plugin_mcae extends auth_plugin_base {
             $cust_arr['%'.$key] = ($text == '') ? format_string($this->config->secondrule_fld) : format_string($text);
         }; 
 
+        list($email_username,$email_domain) = explode("@", $cust_arr['%email']);
+        $cust_arr['%email_username'] = $email_username;
+        $cust_arr['%email_domain'] = $email_domain;
+
         $delimiter = $this->config->delim;
         $delim = strtr($delimiter, array('CR+LF' => chr(13).chr(10), 'CR' => chr(13), 'LF' => chr(10)));
 // ********************** Calculate a cohort names for user
