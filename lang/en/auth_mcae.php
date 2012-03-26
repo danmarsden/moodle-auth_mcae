@@ -16,10 +16,10 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Strings for component 'auth_manual', language 'en', branch 'MOODLE_20_STABLE'
+ * Strings for component 'auth_mcae', language 'en'
  *
- * @package   auth_manual
- * @copyright 1999 onwards Martin Dougiamas  {@link http://moodle.com}
+ * @package   auth_mcae
+ * @copyright 
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -32,3 +32,7 @@ $string['auth_secondrule_fld'] = 'Empty field text';
 $string['auth_replace_arr'] = 'Replace array. 1 value per line, format: old_val|new_val';
 $string['auth_delim'] = 'Delimiter';
 $string['auth_delim_help'] = 'Different OS use different delimiters (end of line).<br>In Windows it`s usually CR+LF<br>In Linux - LF<br>etc.<br>If the module does not work, try to change this value.';
+
+$string['auth_donttouchusers'] = 'Ignore users';
+$string['auth_donttouchusers_help'] = 'Comma separated values';
+$string['auth_enableunenrol'] = 'Enable / Disable automatic unenrol';
