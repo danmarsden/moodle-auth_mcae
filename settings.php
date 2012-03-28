@@ -13,6 +13,11 @@ defined('MOODLE_INTERNAL') || die;
 
 if ($hassiteconfig) { // needs this condition or there is error on login page
     $ADMIN->add('root', new admin_externalpage('cohorttoolmcae',
-            get_string('cohorttoolmcae', 'auth_mcae'),
+            get_string('auth_cohorttoolmcae', 'auth_mcae'),
             new moodle_url('/auth/mcae/convert.php')));
+
+    $ADMIN->add('root', new admin_externalpage('cohortviewmcae',
+            get_string('auth_cohortviewmcae', 'auth_mcae'),
+            new moodle_url('/auth/mcae/view.php')));
+
 }

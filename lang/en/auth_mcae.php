@@ -25,4 +25,19 @@ $string['auth_enableunenrol'] = 'Enable / Disable automatic unenrol';
 
 $string['auth_tools_help'] = 'Unenrol function works only with cohorts associated with the module. With <a href="{$a->url}" target="_blank">this tool</a> you can convert / view / delete all cohorts you have.'; 
 
-$string['cohorttoolmcae'] = 'Cohort operations';
+$string['auth_cohorttoolmcae'] = 'Cohort operations';
+$string['auth_cohortviewmcae'] = 'Cohort viewer';
+
+$string['auth_selectcohort'] = 'Select cohort';
+
+$string['auth_username'] = 'User name';
+$string['auth_link'] = 'Link';
+$string['auth_userlink'] = 'View users';
+$string['auth_userprofile'] = 'User profile &gt;&gt;';
+$string['auth_emptycohort'] = 'Empty cohort';
+$string['auth_viewcohort'] = 'Cohort view';
+$string['auth_total'] = 'Total';
+$string['auth_cohortname'] = 'Cohort name';
+$string['auth_component'] = 'Component';
+$string['auth_count'] = 'Count';
+$string['auth_cohortoper_help'] = '<p>Select cohorts you want to convert.</p><p><b>NOTE:</b> <i>You <b>unable</b> to edit converted cohorts manually!</i></p><p>Backup your database!!!</p>';

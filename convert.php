@@ -18,11 +18,6 @@ require_login();
 $context = get_context_instance(CONTEXT_SYSTEM);
 $returnurl = new moodle_url('/auth/mcae/convert.php');
 
-/*$PAGE->set_pagelayout('report');
-$PAGE->set_context($context);
-$PAGE->set_url('/auth/mcae/convert.php');
-$PAGE->set_title('Cohort operations');*/
-
 admin_externalpage_setup('cohorttoolmcae');
 
 require_capability('moodle/site:config', $context, $USER->id);
@@ -40,6 +35,7 @@ switch ($action) {
             $cname = format_string($cohort->name);
             $cohorts_list[$cid]['name'] = $cname;
             $cohorts_list[$cid]['component'] = $cohort->component;
+            $cohorts_list[$cid]['count'] = $DB->count_records('cohort_members', array('cohortid'=>$cid));
         }
 
         $row = array();
@@ -54,30 +50,31 @@ switch ($action) {
             $cell[1] = new html_table_cell();
             $cell[2] = new html_table_cell();
             $cell[3] = new html_table_cell();
+            $cell[4] = new html_table_cell();
 
             $cell[1]->text = '<input type="checkbox" checked name="clist[]" value="'.$key.'"> '.$val['name'];
             $cell[2]->text = $val['component'];
-            $cell[3]->text = '<a href="'.$viewurl.'">View users</a>';
+            $cell[3]->text = $val['count'];
+            $cell[4]->text = '<a href="'.$viewurl.'">'.get_string('auth_userlink', 'auth_mcae').'</a>';
 
             $cell[1]->style = 'font-weight: bold; background-color: '. $color .';';
             $cell[2]->style = 'font-style: italic; background-color: '. $color .';';
             $cell[3]->style = 'background-color: '. $color .';';
+            $cell[4]->style = 'background-color: '. $color .';';
 
-            $row[$rownum]->cells = array($cell[1], $cell[2], $cell[3]);
+            $row[$rownum]->cells = $cell;
             $rownum++;
         }
 
         $table = new html_table();
-        $table->head = array('Name','Component','');
+        $table->head = array(get_string('auth_cohortname', 'auth_mcae'),get_string('auth_component', 'auth_mcae'), get_string('auth_count', 'auth_mcae'), get_string('auth_link', 'auth_mcae'));
         $table->width = '60%';
         $table->data = $row;
 
         echo $OUTPUT->header();
-        echo $OUTPUT->heading('Cohort operations');
+        echo $OUTPUT->heading(get_string('auth_cohorttoolmcae', 'auth_mcae'));
         
-        echo '<p>Select cohorts you want to convert.</p>';
-        echo '<p><b>NOTE:</b> <i>You <b>unable</b> to edit converted cohorts manually!</i></p>';
-        echo '<p>Backup your database!!!</p>';
+        echo get_string('auth_cohortoper_help', 'auth_mcae');
         echo "<form action=\"$returnurl\" method=\"POST\">";
 
         echo html_writer::table($table);
