@@ -38,3 +38,16 @@ When admin logins, he enrol to cohort named "Administrator"
 -------
 This plugin only create cohorts and enrol users to it.
 To find the list of profile fields go to User - > User bulk operation and download 1-2 users.
+
+=== Version 0.3 changes ===
+1. Unenrol user from cohort after profile change.
+How to use this function:
+ a) Go to Plugins - Authentication - Autoenrol cohort and enable unenrol function,
+ b) Go to yourmoodle/auth/mcae/convert.php and convert cohorts to "auth_mcae". Convert only cohorts that are created by the "auth_mcae" module!
+
+At yourmoodle/auth/mcae/convert.php page you may view, delete or convert cohorts into "manual" or "auth_mcae" mode.
+---
+2. Add "%email_username" and "%email_domain" variables to use in main rule.
+
+3. "Ignore users" list.
+EXAMPLE: admin,test,manager,teacher1,teacher2

@@ -1,51 +1,117 @@
 <?php
 
+/**
+ * Autoenrol cohort authentication plugin version information
+ *
+ * @package    auth
+ * @subpackage mcae
+ * @copyright  2011 Andrew "Kama" (kamasutra12@yandex.ru) 
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 require_once('../../config.php');
+require_once($CFG->dirroot . '/cohort/lib.php');
+require_once($CFG->libdir . '/adminlib.php');
 
 require_login();
 
 $context = get_context_instance(CONTEXT_SYSTEM);
+$returnurl = new moodle_url('/auth/mcae/convert.php');
 
-require_capability('moodle/site:config', $context->id, $USER->id);
+/*$PAGE->set_pagelayout('report');
+$PAGE->set_context($context);
+$PAGE->set_url('/auth/mcae/convert.php');
+$PAGE->set_title('Cohort operations');*/
+
+admin_externalpage_setup('cohorttoolmcae');
+
+require_capability('moodle/site:config', $context, $USER->id);
 
 $action = optional_param('action', 'list', PARAM_ALPHA);
-$clist = optional_param('clist', '', PARAM_ALPHA);
-
-$cohorts = $DB->get_records('cohort', array('contextid'=>$context->id, 'component'=>''));
-$cohorts_list = array();
-
-foreach($cohorts as $cohort) {
-    $cid = $cohort->id;
-    $cname = format_string($cohort->name);
-    $cohorts_list[$cid] = $cname;
-}
-
-$output = '<html><head><title>Cohort converter</title></head><body>';
+$clist = (isset($_POST['clist'])) ? $_POST['clist'] : false;
 
 switch ($action) {
     case 'list':
+        $cohorts = $DB->get_records('cohort', array('contextid'=>$context->id));
+        $cohorts_list = array();
+
+        foreach($cohorts as $cohort) {
+            $cid = $cohort->id;
+            $cname = format_string($cohort->name);
+            $cohorts_list[$cid]['name'] = $cname;
+            $cohorts_list[$cid]['component'] = $cohort->component;
+        }
+
         $row = array();
-        $returnurl = new moodle_url('/auth/mcae/convert.php');
+        $cell = array();
+        $rownum = 0;
         
         foreach($cohorts_list as $key => $val) {
-            $row[] = "<input type=\"checkbox\" checked name=\"clist[]\" value=\"$key\"> $val<br />";
+            $color = ($val['component'] == 'auth_mcae') ? '#f4c430' : '#e9967a';
+            $viewurl = new moodle_url('/auth/mcae/view.php', array('cid' => $key));
+
+            $row[$rownum] = new html_table_row();
+            $cell[1] = new html_table_cell();
+            $cell[2] = new html_table_cell();
+            $cell[3] = new html_table_cell();
+
+            $cell[1]->text = '<input type="checkbox" checked name="clist[]" value="'.$key.'"> '.$val['name'];
+            $cell[2]->text = $val['component'];
+            $cell[3]->text = '<a href="'.$viewurl.'">View users</a>';
+
+            $cell[1]->style = 'font-weight: bold; background-color: '. $color .';';
+            $cell[2]->style = 'font-style: italic; background-color: '. $color .';';
+            $cell[3]->style = 'background-color: '. $color .';';
+
+            $row[$rownum]->cells = array($cell[1], $cell[2], $cell[3]);
+            $rownum++;
         }
+
+        $table = new html_table();
+        $table->head = array('Name','Component','');
+        $table->width = '60%';
+        $table->data = $row;
+
+        echo $OUTPUT->header();
+        echo $OUTPUT->heading('Cohort operations');
         
-        $output .= '<h2>Cohort converter</h2><br>';
-        $output .= '<p>Select cohorts you want to convert.</p>';
-        $output .= '<p><b>NOTE:</b> <i>You <b>unable</b> to edit converted cohorts manually!</i></p>';
-        $output .= '<h2>Backup your database!!!</h2><p> </p>';
-        $output .= "<form action=\"$returnurl\" method=\"POST\">";
-        $output .= implode('',$row);
-        $output .= '<input type="submit" name="submit" value="Submit">';
-        $output .= '</form>';
+        echo '<p>Select cohorts you want to convert.</p>';
+        echo '<p><b>NOTE:</b> <i>You <b>unable</b> to edit converted cohorts manually!</i></p>';
+        echo '<p>Backup your database!!!</p>';
+        echo "<form action=\"$returnurl\" method=\"POST\">";
+
+        echo html_writer::table($table);
+
+        echo '<select name="action"><option value="do">Convert to auth_mcae</option><option value="restore">Convert to manual</option><option value="delete">Delete cohorts</option></select>';
+        echo '<input type="submit" name="submit" value="Submit">';
+        echo '</form>';
     break;
     case 'do':
-        $output .= print_r($clist, TRUE);
+        if ($clist) {
+            list($usql, $params) = $DB->get_in_or_equal($clist);
+            $DB->set_field_select('cohort', 'component', 'auth_mcae', 'id ' . $usql, $params);
+        };
+        redirect($returnurl);
+    break;
+    case 'restore':
+        if ($clist) {
+            list($usql, $params) = $DB->get_in_or_equal($clist);
+            $DB->set_field_select('cohort', 'component', '', 'id ' . $usql, $params);
+        };
+        redirect($returnurl);
+    break;
+    case 'delete':
+        if ($clist) {
+            foreach ($clist as $cid){
+                $cohort = new stdClass();
+                $cohort->id = $cid;
+                cohort_delete_cohort($cohort);
+            };
+        };
+        redirect($returnurl);
     break;
 }
-$output .= '</body></html>';
 
-print $output;
+echo $OUTPUT->footer();
 
 ?>

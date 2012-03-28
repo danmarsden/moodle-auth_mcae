@@ -19,14 +19,15 @@
 	if (!isset($config->enableunenrol)) {
 	    $config->enableunenrol = 0;
 	}
-
 ?>
+
 <table cellspacing="0" cellpadding="5" border="0">
 
 <tr valign="top">
     <td align="right"><?php print_string('auth_mainrule_fld', 'auth_mcae') ?>: </td>
     <td>
-        <textarea name="mainrule_fld" rows="10" cols="60"><?php echo $config->mainrule_fld ?></textarea>
+        <textarea name="mainrule_fld" class="pastehere" rows="10" cols="60"><?php echo $config->mainrule_fld ?></textarea>
+        <p class="amcopypaste"><?php include_once('fields.php'); ?></p>
         <?php
 
         if (isset($err['mainrule_fld'])) {
@@ -97,6 +98,13 @@
     <td><input type="checkbox" name="enableunenrol" value="1" <?php if ($config->enableunenrol == 1) {echo 'checked';} ?>> <?php print_string('auth_enableunenrol', 'auth_mcae') ?></td>
     <td></td>
 </tr>
+<tr><td colspan="3"><p>
+<?php 
+$toolsurl = new moodle_url('/auth/mcae/convert.php');
+print_string('auth_tools_help', 'auth_mcae', array('url' => "$toolsurl")); 
+?>
+</p></td></tr>
+
 <?php
 
 print_auth_lock_options('mcae', $user_fields, get_string('auth_fieldlocks_help', 'auth'), false, false);

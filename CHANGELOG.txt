@@ -1,3 +1,8 @@
+Version 0.3
+- "Ignore user" feature added
+- "Unenrol" feature added
+- Add "%email_username" and "%email_domain" variables
+
 Version 0.2
 - Fix error with arrays in profile field
 - Add "Delimiter" value (CR+LF, CR, LF)
