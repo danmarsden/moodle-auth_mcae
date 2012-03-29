@@ -41,3 +41,5 @@ $string['auth_cohortname'] = 'Cohort name';
 $string['auth_component'] = 'Component';
 $string['auth_count'] = 'Count';
 $string['auth_cohortoper_help'] = '<p>Select cohorts you want to convert.</p><p><b>NOTE:</b> <i>You <b>unable</b> to edit converted cohorts manually!</i></p><p>Backup your database!!!</p>';
+
+$string['auth_profile_help'] = 'Available templates';

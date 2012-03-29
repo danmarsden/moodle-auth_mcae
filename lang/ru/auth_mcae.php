@@ -42,3 +42,5 @@ $string['auth_cohortname'] = 'Название';
 $string['auth_component'] = 'Модуль';
 $string['auth_count'] = 'Количество';
 $string['auth_cohortoper_help'] = '<p>Выберите группы для преобразования.</p><p><b>ВНИМАНИЕ:</b> <i>Вы <b>не сможете</b> редактировать группы, привязанные к модулю "auth_mcae", вручную!</i></p><p>Сделайте резервную копию базы данных!!!</p>';
+
+$string['auth_profile_help'] = 'Доступные шаблоны';

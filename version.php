@@ -10,8 +10,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2011121500;
+$plugin->version   = 2012032914;
 $plugin->component = 'auth_mcae';
-$plugin->maturity = 150;
-$plugin->requires = 2010112400;
-$plugin->release = '0.2';
+$plugin->maturity = MATURITY_RC;
+$plugin->requires = 2011070100;
+$plugin->release = '0.3';

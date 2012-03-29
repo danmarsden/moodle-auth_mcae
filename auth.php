@@ -21,7 +21,7 @@ class auth_plugin_mcae extends auth_plugin_base {
      */
     function auth_plugin_mcae() {
         $this->authtype = 'mcae';
-        $this->config = get_config('auth/mcae');
+        $this->config = get_config('auth_mcae');
     }
 
     /**
@@ -105,22 +105,6 @@ class auth_plugin_mcae extends auth_plugin_base {
         return true;
     }
 
-    /**
-     * Prints a form for configuring this authentication plugin.
-     *
-     * This function is called from admin/auth.php, and outputs a full page with
-     * a form for configuring this plugin.
-     *
-     * @param array $config An object containing all the data for this page.
-     * @param string $error
-     * @param array $user_fields
-     * @return void
-     */
-    function config_form($config, $err, $user_fields) {
-	global $OUTPUT;
-        include 'config.html';
-    }
-
    /**
     * Confirm the new user as registered. This should normally not be used,
     * but it may be necessary if the user auth_method is changed to manual
@@ -174,12 +158,12 @@ class auth_plugin_mcae extends auth_plugin_base {
 	    $config->enableunenrol = 0;
 	}
         // save settings
-        set_config('mainrule_fld', $config->mainrule_fld, 'auth/mcae');
-        set_config('secondrule_fld', $config->secondrule_fld, 'auth/mcae');
-        set_config('replace_arr', $config->replace_arr, 'auth/mcae');
-        set_config('delim', $config->delim, 'auth/mcae');
-        set_config('donttouchusers', $config->donttouchusers, 'auth/mcae');
-        set_config('enableunenrol', $config->enableunenrol, 'auth/mcae');
+        set_config('mainrule_fld', $config->mainrule_fld, 'auth_mcae');
+        set_config('secondrule_fld', $config->secondrule_fld, 'auth_mcae');
+        set_config('replace_arr', $config->replace_arr, 'auth_mcae');
+        set_config('delim', $config->delim, 'auth_mcae');
+        set_config('donttouchusers', $config->donttouchusers, 'auth_mcae');
+        set_config('enableunenrol', $config->enableunenrol, 'auth_mcae');
 
         return true;
     }
