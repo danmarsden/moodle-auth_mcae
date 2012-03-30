@@ -13,6 +13,9 @@ How to use:
 5.    ???
 6.    PROFIT
 
+UPGRADE:
+Visit Site administration - Notifications page and follow the instructions.
+
 Cohorts are created in CONTEXT_SYSTEM
 
 EXAMPLE:
