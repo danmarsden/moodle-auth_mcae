@@ -34,7 +34,7 @@ foreach($cohorts as $cohort) {
 
 
 $sql = "SELECT u.id AS uid, CONCAT(u.firstname, ' ', u.lastname) AS usrname FROM {cohort_members} AS cm JOIN {user} AS u ON u.id = cm.userid WHERE cm.cohortid = ? ORDER BY usrname";
-$userlist = $DB->get_record_sql($sql, array($cid));
+$userlist = $DB->get_records_sql($sql, array($cid));
 $total = 0;
 
 $head = array(get_string('auth_username', 'auth_mcae'),get_string('auth_link', 'auth_mcae'));
