@@ -47,8 +47,8 @@ if (empty($userlist)) {
     $data[] = array($userlist->usrname, '<a target="_blank" href="'.$link.'">'.get_string('auth_userprofile', 'auth_mcae').'</a>');
 } else {
     foreach ($userlist as $user) {
-        $link = new moodle_url('', array('id' => $userlist->uid));
-        $data[] = array($user['usrname'], '<a href="'.$link.'">'.get_string('auth_userprofile', 'auth_mcae').'</a>');
+        $link = new moodle_url('', array('id' => $user->uid));
+        $data[] = array($user->usrname, '<a href="'.$link.'">'.get_string('auth_userprofile', 'auth_mcae').'</a>');
         $total++;
     };
     $data[] = array(get_string('auth_total', 'auth_mcae'), $total);
