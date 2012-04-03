@@ -1,3 +1,6 @@
+Version 0.31
+- Fix errors in view.php and russian translation
+
 Version 0.3
 - "Ignore user" feature added
 - "Unenrol" feature added
