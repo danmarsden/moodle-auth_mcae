@@ -54,3 +54,30 @@ At yourmoodle/auth/mcae/convert.php page you may view, delete or convert cohorts
 
 3. "Ignore users" list.
 EXAMPLE: admin,test,manager,teacher1,teacher2
+
+===
+
+If you use an Email based self registration or similar plugin and users enrolls into cohort after second login
+
+Copy/paste this code into moodle/themes/your_theme/layout/general.php (or default.php)
+
+NOTE: Enable and configure mcae plugin first!
+
+
+<?php
+
+global $SESSION, $USER;
+
+if ($USER->id != 0) { // Only for autenticated users
+    $mcae = get_auth_plugin('mcae'); //Get mcae plugin
+
+    if (isset($SESSION->mcautoenrolled)) {
+        if (!$SESSION->mcautoenrolled) {
+            $mcae->user_authenticated_hook($USER,$USER->username,""); //Autoenrol if mcautoenrolled FALSE
+        }
+    } else {
+        $mcae->user_authenticated_hook($USER,$USER->username,""); //Autoenrol if mcautoenrolled NOT SET
+    }
+}
+
+?>
