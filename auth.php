@@ -198,11 +198,13 @@ class auth_plugin_mcae extends auth_plugin_base {
         $ignore = explode(",",$this->config->donttouchusers);
 
         if (!empty($ignore) AND array_search($username, $ignore) !== false) {
+            $SESSION->mcautoenrolled = TRUE;
             return true;
         };
 
         // Ignore guests
         if ($uid < 2) {
+            $SESSION->mcautoenrolled = TRUE;
             return true;
         };
         
@@ -301,15 +303,13 @@ class auth_plugin_mcae extends auth_plugin_base {
             };
             $processed[] = $cid;
         };
+        $SESSION->mcautoenrolled = TRUE;
+        
         //Unenrol user
         if ($this->config->enableunenrol == 1) {
         //List of cohorts where this user enrolled
             $sql = "SELECT c.id AS cid FROM {cohort} c JOIN {cohort_members} cm ON cm.cohortid = c.id WHERE c.component = 'auth_mcae' AND cm.userid = $uid";
             $enrolledcohorts = $DB->get_records_sql($sql);
-
-//print_r($processed);
-//print_r($enrolledcohorts);
-//die();
 
             foreach ($enrolledcohorts as $ec) {
                 if(array_search($ec->cid, $processed) === false) {
