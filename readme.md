@@ -21,6 +21,8 @@ Cohorts are created in CONTEXT_SYSTEM.
 
 **Template for cohort name**
 
+1 template per line.
+
 In the template you may use any characters (except '%') and profile field values. To insert a profile field value, use '%' sign and name of the field (%lastname, %firstname, etc).
 Custom profile fields have two templates: %profile_field_name and %profile_field_raw_name. It's useful with fields like 'menu of choices':
  * %profile_field_raw_name - number of the selected value
@@ -39,9 +41,15 @@ If profile field is empty then it's replaced with this value.
 
 **Replacement array**
 
+You can change the cohort name after it's generation.
 
+1 replacement per line, format - old value|new value
+
+    very long cohort name|shortname
 
 **Unenrol**
+
+
 
 **Ignore users**
 
