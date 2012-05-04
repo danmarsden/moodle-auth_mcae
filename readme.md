@@ -12,6 +12,29 @@ Cohorts are created in CONTEXT_SYSTEM.
  * Copy the 'mcae' folder into your_moodle/auth
  * Visit Site administration - Notifications page and follow the instructions
 
+If you use an Email based self registration or similar plugin and users enrolls into cohort after second login copy/paste this code into moodle/themes/your_theme/layout/general.php (or default.php)
+
+> **NOTE:** Enable and configure mcae plugin first!
+
+
+    <?php
+
+    global $SESSION, $USER;
+
+    if ($USER->id != 0) { // Only for autenticated users
+        $mcae = get_auth_plugin('mcae'); //Get mcae plugin
+
+        if (isset($SESSION->mcautoenrolled)) {
+            if (!$SESSION->mcautoenrolled) {
+                $mcae->user_authenticated_hook($USER,$USER->username,""); //Autoenrol if mcautoenrolled FALSE
+            }
+        } else {
+            $mcae->user_authenticated_hook($USER,$USER->username,""); //Autoenrol if mcautoenrolled NOT SET
+        }
+    }
+
+    ?>
+
 ## Upgrade
 
  * Replace the your_moodle/auth/mcae folder with new one
@@ -49,11 +72,24 @@ You can change the cohort name after it's generation.
 
 **Unenrol**
 
+Unenrol users from cohorts after profile change.
 
+To use an unenrol feature:
+
+ * Go to Plugins - Authentication - Autoenrol cohort and enable unenrol function
+ * Go to yourmoodle/auth/mcae/convert.php and convert cohorts you want to "auth_mcae".
+
+Convert only cohorts that are created by the "auth_mcae" module!
+
+At yourmoodle/auth/mcae/convert.php page you may view, delete or convert cohorts into "manual" or "auth_mcae" mode.
 
 **Ignore users**
 
-**EXAMPLE:**
+List of users to ignore. Comma separated usernames.
+
+    admin,test,manager,teacher1,teacher2
+
+## Usage example
 
 You have a custom profile fields "status" (student, teacher or admin) and "course". 
 
@@ -61,9 +97,9 @@ You wnat to enrol many users into cohorts like "course - status" than enrol coho
 
 At configuration page set:
 
-Main template to %profile_field_course - %profile_field_status (1 template per line, before profile fields type %)
+Main template to %profile_field_course - %profile_field_status
 
-Empty field text (When field is empty this value used) to none
+Empty field text to 'none'
 
 **Result:**
 
@@ -71,27 +107,9 @@ Empty field text (When field is empty this value used) to none
  * When 1st course teacher logins, he enrol to cohort named "1 - teacher"
  * When admin logins, he enrol to cohort named "none - admin" (Course not set, status - admin)
 
-To rename "none - admin" cohort to "Administration" you must set a replacement array field at the configuration page (1 replacement per line, old value|new value)
+To rename "none - admin" cohort to "Administration" you must set a replacement array field at the configuration page
 In our case: none - admin|Administrator
 
 **Result:**
 
 When admin logins, he enrol to cohort named "Administrator"
-
--------
-This plugin only create cohorts and enrol users to it.
-To find the list of profile fields go to User - > User bulk operation and download 1-2 users.
-
-Version 0.3 changes
-1. Unenrol user from cohort after profile change.
-How to use this function:
- a) Go to Plugins - Authentication - Autoenrol cohort and enable unenrol function,
- b) Go to yourmoodle/auth/mcae/convert.php and convert cohorts to "auth_mcae". Convert only cohorts that are created by the "auth_mcae" module!
-
-At yourmoodle/auth/mcae/convert.php page you may view, delete or convert cohorts into "manual" or "auth_mcae" mode.
-
----
-2. Add "%email_username" and "%email_domain" variables to use in main rule.
-
-3. "Ignore users" list.
-EXAMPLE: admin,test,manager,teacher1,teacher2
