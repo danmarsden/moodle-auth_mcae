@@ -234,8 +234,8 @@ class auth_plugin_mcae extends auth_plugin_base {
             };
 
             // Raw custom profile fields
-            $key = strtr($key, 'profile_field', 'profile_field_raw');
-            $cust_arr["%$key"] = ($text == '') ? format_string($this->config->secondrule_fld) : format_string($text);
+            $fld_key = preg_replace('/profile_field_/', 'profile_field_raw_', $key);
+            $cust_arr["%$fld_key"] = ($text == '') ? format_string($this->config->secondrule_fld) : format_string($text);
         }; 
 
         // Custom profile field values
