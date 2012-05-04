@@ -19,11 +19,11 @@ Cohorts are created in CONTEXT_SYSTEM.
 
 ## Configuration
 
-** Template for cohort name **
-** Replace empty field **
-** Replacement array **
-** Unenrol **
-** Ignore users **
+**Template for cohort name**
+**Replace empty field**
+**Replacement array**
+**Unenrol**
+**Ignore users**
 
 EXAMPLE:
 You have a custom profile fields "status" (student, teacher or admin) and "course". 
@@ -56,6 +56,7 @@ How to use this function:
  b) Go to yourmoodle/auth/mcae/convert.php and convert cohorts to "auth_mcae". Convert only cohorts that are created by the "auth_mcae" module!
 
 At yourmoodle/auth/mcae/convert.php page you may view, delete or convert cohorts into "manual" or "auth_mcae" mode.
+
 ---
 2. Add "%email_username" and "%email_domain" variables to use in main rule.
 
