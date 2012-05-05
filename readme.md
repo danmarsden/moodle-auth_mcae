@@ -57,8 +57,15 @@ An email field have 3 variants:
  * %email_domain - only domain
 
 > **Note:** Profile field templates is case sensitive. %username and %UserName are two different fields!
-> Custom profile field of 'Textarea' type have only 'raw' variant.
+
+> Custom profile field types:
+
+> 'Textarea' type have only 'raw' variant. All HTML tags is removed.
+
+> 'Text input' returns the same value in both variants
+
 > Checkboxes returns 1 or 0 in both variants.
+
 > Date/time fields returns unix timestamp
 
 **Replace empty field**
