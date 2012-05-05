@@ -1,3 +1,10 @@
+Version 0.4
+- Add 'raw' custom profile fields
+- Add session variable mcautoenrolled for use in other plugins or themes
+- Add theme patch which forces autoenrol
+- Rebuild README file /now it's readme.md/
+- update 'Available templates' section in settings.php
+
 Version 0.31
 - Fix errors in view.php and russian translation
 

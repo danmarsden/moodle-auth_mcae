@@ -13,7 +13,7 @@ defined('MOODLE_INTERNAL') || die;
 
 global $USER;
 
-// $hassiteconfig or $ADMIN->fulltree / What's the difference?
+require_once($CFG->dirroot.'/user/profile/lib.php');
 
 if ($hassiteconfig) { // needs this condition or there is error on login page
     $ADMIN->add('root', new admin_externalpage('cohorttoolmcae',
@@ -31,22 +31,33 @@ if ($ADMIN->fulltree) {
 
 // Profile field helper
     $fldlist = array();
-    foreach ($USER as $key => $val){
+    $usr_helper = $USER;
+
+    profile_load_data($usr_helper);
+    foreach ($usr_helper as $key => $val){
+        $fld = preg_replace('/profile_field_/', 'profile_field_raw_', $key);
         if (is_array($val)) {
             if (isset($val['text'])) {
-                $fldlist[] = "<span title=\"%$key\">%$key</span>";
+                $fldlist[] = "<span title=\"%$fld\">%$fld</span>";
             };
         } else {
-            $fldlist[] = "<span title=\"%$key\">%$key</span>";
+            $fldlist[] = "<span title=\"%$fld\">%$fld</span>";
         };
-    }
+    }; 
 
+    // Custom profile field values
+    foreach ($usr_helper->profile as $key => $val) {
+        $fldlist[] = "<span title=\"%profile_field_$key\">%profile_field_$key</span>";
+    };
+
+    // Additional values for email
     $fldlist[] = "<span title=\"%email_username\">%email_username</span>";
     $fldlist[] = "<span title=\"%email_domain\">%email_domain</span>";
 
     sort($fldlist);
+    $help_text = implode(', ', $fldlist);
 
-    $settings->add(new admin_setting_heading('auth_mcae_profile_help', get_string('auth_profile_help', 'auth_mcae'), implode(', ', $fldlist)));
+    $settings->add(new admin_setting_heading('auth_mcae_profile_help', get_string('auth_profile_help', 'auth_mcae'), $help_text));
 
     $settings->add(new admin_setting_configselect('auth_mcae/delim', get_string('auth_delim', 'auth_mcae'), get_string('auth_delim_help', 'auth_mcae'), 'CR+LF', array('CR+LF'=>'CR+LF', 'CR'=>'CR', 'LF'=>'LF')));
     $settings->add(new admin_setting_configtext('auth_mcae/secondrule_fld', get_string('auth_secondrule_fld', 'auth_mcae'),'', 'n/a'));

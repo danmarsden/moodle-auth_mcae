@@ -223,28 +223,36 @@ class auth_plugin_mcae extends auth_plugin_base {
             $cohorts_list[$cid] = $cname;
         }
     
-// ********************** Get advanced user data
-//    $customfld = profile_user_record($uid);
-
+        // Get advanced user data
         profile_load_data($user);
         $cust_arr = array();
         foreach ($user as $key => $val){
-// "Text input" profile field is an array with 'text' ... aaahh ... val,expr,...
             if (is_array($val)) {
                 $text = (isset($val['text'])) ? $val['text'] : '';
             } else {
                 $text = $val;
             };
-            $cust_arr['%'.$key] = ($text == '') ? format_string($this->config->secondrule_fld) : format_string($text);
+
+            // Raw custom profile fields
+            $fld_key = preg_replace('/profile_field_/', 'profile_field_raw_', $key);
+            $cust_arr["%$fld_key"] = ($text == '') ? format_string($this->config->secondrule_fld) : format_string($text);
         }; 
 
+        // Custom profile field values
+        foreach ($user->profile as $key => $val) {
+            $cust_arr["%profile_field_$key"] = ($val == '') ? format_string($this->config->secondrule_fld) : format_string($val);
+        };
+
+        // Additional values for email
         list($email_username,$email_domain) = explode("@", $cust_arr['%email']);
         $cust_arr['%email_username'] = $email_username;
         $cust_arr['%email_domain'] = $email_domain;
 
+        // Delimiter
         $delimiter = $this->config->delim;
         $delim = strtr($delimiter, array('CR+LF' => chr(13).chr(10), 'CR' => chr(13), 'LF' => chr(10)));
-// ********************** Calculate a cohort names for user
+
+        // Calculate a cohort names for user
         $repl_arr_tpl = $this->config->replace_arr;
 
         $repl_arr = array();
@@ -256,13 +264,14 @@ class auth_plugin_mcae extends auth_plugin_base {
             };
         };
 
-// ********************** Generate cohorts array
+        // Generate cohorts array
         $cohorts_arr_tpl = $this->config->mainrule_fld;
 
         $cohorts_arr = array();
         if (!empty($cohorts_arr_tpl)) {
             $cohorts_arr = explode($delim, $cohorts_arr_tpl);
         } else {
+            $SESSION->mcautoenrolled = TRUE;
             return; //Empty mainrule
         };
         
@@ -286,11 +295,10 @@ class auth_plugin_mcae extends auth_plugin_base {
                     add_to_log(SITEID, 'user', 'Already exists in cohort ID ' . $cid, "view.php?id=$user->id&course=".SITEID, $user->id, 0, $user->id);
                 };
             } else {
-// Cohort not exist so create a new one
+                // Cohort not exist so create a new one
                 add_to_log(SITEID, 'user', 'Cohort not exist ID so screate a new one' , "view.php?id=$user->id&course=".SITEID, $user->id, 0, $user->id);
                 $newcohort = new stdClass();
                 $newcohort->name = $cohortname;
-//        $newcohort->idnumber = "auto_" . substr($cohortname, 0, 20) . "_" . date("d-m-Y");
                 $newcohort->description = "created ". date("d-m-Y");
                 $newcohort->contextid = $context->id;
                 if ($this->config->enableunenrol == 1) {
