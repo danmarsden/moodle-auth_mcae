@@ -1,5 +1,0 @@
-DEV branch.
-
-TODO!!!
-- %profile_field_something to $profile_field_something_raw
-- $USER->profile->something to %profile_field_something
