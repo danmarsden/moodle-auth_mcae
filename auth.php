@@ -240,7 +240,7 @@ class auth_plugin_mcae extends auth_plugin_base {
 
         // Custom profile field values
         foreach ($user->profile as $key => $val) {
-            $cust_arr["%profile_field_$key"] = ($text == '') ? format_string($this->config->secondrule_fld) : format_string($text);
+            $cust_arr["%profile_field_$key"] = ($val == '') ? format_string($this->config->secondrule_fld) : format_string($val);
         };
 
         // Additional values for email
