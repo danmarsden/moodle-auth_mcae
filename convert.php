@@ -43,7 +43,7 @@ switch ($action) {
         $rownum = 0;
         
         foreach($cohorts_list as $key => $val) {
-            $color = ($val['component'] == 'auth_mcae') ? '#f4c430' : '#e9967a';
+            $color = ($val['component'] == 'auth_mcae') ? '#f4c430 !important' : '#e9967a !important';
             $viewurl = new moodle_url('/auth/mcae/view.php', array('cid' => $key));
 
             $row[$rownum] = new html_table_row();
@@ -52,7 +52,7 @@ switch ($action) {
             $cell[3] = new html_table_cell();
             $cell[4] = new html_table_cell();
 
-            $cell[1]->text = '<input type="checkbox" checked name="clist[]" value="'.$key.'"> '.$val['name'];
+            $cell[1]->text = '<input type="checkbox" name="clist[]" value="'.$key.'"> '.$val['name'];
             $cell[2]->text = $val['component'];
             $cell[3]->text = $val['count'];
             $cell[4]->text = '<a href="'.$viewurl.'">'.get_string('auth_userlink', 'auth_mcae').'</a>';
@@ -99,13 +99,27 @@ switch ($action) {
     break;
     case 'delete':
         if ($clist) {
+            set_time_limit(0);
+
+            echo $OUTPUT->header();
+            echo $OUTPUT->heading(get_string('auth_cohorttoolmcae', 'auth_mcae'));
+            
+            $progress = new progress_bar('delcohort');
+            $progress->create();
+            $delcount = count($clist);
+            $delcurrent = 1;
+
             foreach ($clist as $cid){
                 $cohort = new stdClass();
                 $cohort->id = $cid;
                 cohort_delete_cohort($cohort);
+                $progress->update($delcurrent, $delcount, "$delcurrent / $delcount");
+                $delcurrent++;
             };
         };
-        redirect($returnurl);
+        echo $OUTPUT->continue_button($returnurl);
+        echo $OUTPUT->footer();
+        die();
     break;
 }
 

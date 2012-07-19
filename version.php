@@ -13,5 +13,5 @@ defined('MOODLE_INTERNAL') || die();
 $plugin->version   = 2012050512;
 $plugin->component = 'auth_mcae';
 $plugin->maturity = MATURITY_RC;
-$plugin->requires = 2011070100;
-$plugin->release = '0.4';
+$plugin->requires = 2012071900;
+$plugin->release = '0.5';

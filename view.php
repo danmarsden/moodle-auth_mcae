@@ -42,12 +42,9 @@ $data = array();
 
 if (empty($userlist)) {
     $data[] = array(get_string('auth_emptycohort', 'auth_mcae'),'');
-} else if (count($userlist) == 1) {
-    $link = new moodle_url('/user/profile.php', array('id' => $userlist->uid));
-    $data[] = array($userlist->usrname, '<a target="_blank" href="'.$link.'">'.get_string('auth_userprofile', 'auth_mcae').'</a>');
 } else {
     foreach ($userlist as $user) {
-        $link = new moodle_url('', array('id' => $user->uid));
+        $link = new moodle_url('/user/profile.php', array('id' => $user->uid));
         $data[] = array($user->usrname, '<a href="'.$link.'">'.get_string('auth_userprofile', 'auth_mcae').'</a>');
         $total++;
     };
