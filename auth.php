@@ -190,7 +190,7 @@ class auth_plugin_mcae extends auth_plugin_base {
      * @param string $password plain text password (with system magic quotes)
      */
     function user_authenticated_hook(&$user, $username, $password) {
-	global $DB;
+	global $DB, $SESSION;
 
         $context = get_context_instance(CONTEXT_SYSTEM);
         $uid = $user->id;
