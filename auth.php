@@ -3,12 +3,9 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir.'/authlib.php');
 require_once($CFG->dirroot.'/cohort/lib.php');
-
+require_once($CFG->dirroot.'/user/profile/lib.php');
 
 /**
- * This is a copy of Manual authentication plugin.
- * 2 function changed: user_update and process_config
- *
  * @package    auth
  * @subpackage mcae
  * @copyright  2011 Andrew "Kama" (kamasutra12@yandex.ru)
