@@ -16,11 +16,11 @@ global $USER;
 require_once($CFG->dirroot.'/user/profile/lib.php');
 
 if ($hassiteconfig) { // needs this condition or there is error on login page
-    $ADMIN->add('root', new admin_externalpage('cohorttoolmcae',
+    $ADMIN->add('accounts', new admin_externalpage('cohorttoolmcae',
             get_string('auth_cohorttoolmcae', 'auth_mcae'),
             new moodle_url('/auth/mcae/convert.php')));
 
-    $ADMIN->add('root', new admin_externalpage('cohortviewmcae',
+    $ADMIN->add('accounts', new admin_externalpage('cohortviewmcae',
             get_string('auth_cohortviewmcae', 'auth_mcae'),
             new moodle_url('/auth/mcae/view.php')));
 
