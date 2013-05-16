@@ -32,8 +32,8 @@ foreach($cohorts as $cohort) {
     $select_options .= "<option $selected value=\"$cohortid\">$cohortname</option>";
 }
 
-
-$sql = "SELECT u.id AS uid, CONCAT(u.firstname, ' ', u.lastname) AS usrname FROM {cohort_members} AS cm JOIN {user} AS u ON u.id = cm.userid WHERE cm.cohortid = ? ORDER BY usrname";
+$fullname = $DB->sql_fullname($first='firstname', $last='lastname');
+$sql = "SELECT u.id AS uid, $fullname AS usrname FROM {cohort_members} AS cm JOIN {user} AS u ON u.id = cm.userid WHERE cm.cohortid = ? ORDER BY usrname";
 $userlist = $DB->get_records_sql($sql, array($cid));
 $total = 0;
 
