@@ -1,6 +1,6 @@
-1. sql_fullname function in view.php (ln 36)
+1. sql_fullname function in view.php (ln 36) - done
 2. move menu links from root - done
 3. add $SESSION global in auth.php - done (pull request from sbourget. thanks!)
-4. add require_once in auth.php
+4. add require_once in auth.php - done
 5. test on mdl 2.5 and release - done (upd my moodle to 2.5_stable. it works!)
 6. update version.php and plugin on moodle.org (after 1-5)
