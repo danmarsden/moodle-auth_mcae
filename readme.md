@@ -68,6 +68,24 @@ An email field have 3 variants:
 
 > Date/time fields returns unix timestamp
 
+**Split arguments:**
+Synopsis: %split(<fieldname>|<delimiter>)
+
+Returns multiple cohorts, each of which is formed by splitting field on boundaries formed by the delimiter.
+
+Arguments:
+ * fieldname - Profile field name with '%' sign.
+ * delimiter - The boundary string. 1 - 5 signs.
+
+> **Example:**
+
+> User John set custom profile field "Known languages" to "English, Spanish, Chinese"
+
+> Main template contains string "Language - %split(%knownlanguage|, )"
+
+> John will be enrolled in 3 cohorts: Language - English, Language - Spanish and Language - Chinese
+
+
 **Replace empty field**
 
 If profile field is empty then it's replaced with this value.
