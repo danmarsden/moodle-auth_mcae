@@ -1,3 +1,8 @@
+Version 1.1
+- Add %split function
+- Rename some variables
+- Copy readme.md to readme.txt for moodle plugin database
+
 Version 1.0
 - Use sql_fullname function in view.php
 - move menu links from root to user->accounts section

@@ -204,7 +204,7 @@ class auth_plugin_mcae extends auth_plugin_base {
             $SESSION->mcautoenrolled = TRUE;
             return true;
         };
-        
+
 // ********************** Get COHORTS data
         $clause = array('contextid'=>$context->id);
         if ($this->config->enableunenrol == 1) {
@@ -219,10 +219,10 @@ class auth_plugin_mcae extends auth_plugin_base {
 	    $cname = format_string($cohort->name);
             $cohorts_list[$cid] = $cname;
         }
-    
+
         // Get advanced user data
         profile_load_data($user);
-        $cust_arr = array();
+        $user_profile_data = array();
         foreach ($user as $key => $val){
             if (is_array($val)) {
                 $text = (isset($val['text'])) ? $val['text'] : '';
@@ -232,51 +232,70 @@ class auth_plugin_mcae extends auth_plugin_base {
 
             // Raw custom profile fields
             $fld_key = preg_replace('/profile_field_/', 'profile_field_raw_', $key);
-            $cust_arr["%$fld_key"] = ($text == '') ? format_string($this->config->secondrule_fld) : format_string($text);
-        }; 
+            $user_profile_data["%$fld_key"] = ($text == '') ? format_string($this->config->secondrule_fld) : format_string($text);
+        };
 
         // Custom profile field values
         foreach ($user->profile as $key => $val) {
-            $cust_arr["%profile_field_$key"] = ($val == '') ? format_string($this->config->secondrule_fld) : format_string($val);
+            $user_profile_data["%profile_field_$key"] = ($val == '') ? format_string($this->config->secondrule_fld) : format_string($val);
         };
 
         // Additional values for email
-        list($email_username,$email_domain) = explode("@", $cust_arr['%email']);
-        $cust_arr['%email_username'] = $email_username;
-        $cust_arr['%email_domain'] = $email_domain;
+        list($email_username,$email_domain) = explode("@", $user_profile_data['%email']);
+        $user_profile_data['%email_username'] = $email_username;
+        $user_profile_data['%email_domain'] = $email_domain;
 
         // Delimiter
         $delimiter = $this->config->delim;
         $delim = strtr($delimiter, array('CR+LF' => chr(13).chr(10), 'CR' => chr(13), 'LF' => chr(10)));
 
         // Calculate a cohort names for user
-        $repl_arr_tpl = $this->config->replace_arr;
+        $replacements_tpl = $this->config->replace_arr;
 
-        $repl_arr = array();
-        if (!empty($repl_arr_tpl)) {
-            $repl_arr_pre = explode($delim, $repl_arr_tpl);
-            foreach ($repl_arr_pre as $rap) {
+        $replacements = array();
+        if (!empty($replacements_tpl)) {
+            $replacements_pre = explode($delim, $replacements_tpl);
+            foreach ($replacements_pre as $rap) {
                 list($key, $val) = explode("|", $rap);
-                $repl_arr[$key] = $val;
+                $replacements[$key] = $val;
             };
         };
 
         // Generate cohorts array
-        $cohorts_arr_tpl = $this->config->mainrule_fld;
+        $main_rule = $this->config->mainrule_fld;
 
-        $cohorts_arr = array();
-        if (!empty($cohorts_arr_tpl)) {
-            $cohorts_arr = explode($delim, $cohorts_arr_tpl);
+        $templates_tpl = array();
+        $templates = array();
+        if (!empty($main_rule)) {
+            $templates_tpl = explode($delim, $main_rule);
         } else {
             $SESSION->mcautoenrolled = TRUE;
             return; //Empty mainrule
         };
-        
-        $processed = array();
 
-        foreach ($cohorts_arr as $cohort) {
-            $cohortname = strtr($cohort, $cust_arr);
-            $cohortname = (!empty($repl_arr)) ? strtr($cohortname, $repl_arr) : $cohortname;
+
+        // Split!
+        foreach ($templates_tpl as $item) {
+            if (preg_match('/(?<full>%split\((?<fld>%\w*)\|(?<delim>.{1,5})\))/', $item, $split_params)) {
+                $splitted = explode($split_params['delim'], $user_profile_data[$split_params['fld']]);
+                foreach($splitted as $key => $val) {
+                    $user_profile_data[$split_params['fld']."_$key"] = $val;
+                    $templates[] = strtr($item, array("${split_params['full']}" => "${split_params['fld']}_$key"));
+                }
+            } else {
+                $templates[] = $item;
+            }
+        }
+
+        $processed = array();
+        $log_new = array();
+        $log_unenrolled = array();
+        $log_exist = array();
+        $log_add = array();
+
+        foreach ($templates as $cohort) {
+            $cohortname = strtr($cohort, $user_profile_data);
+            $cohortname = (!empty($replacements)) ? strtr($cohortname, $replacements) : $cohortname;
 
             if ($cohortname == '') {
                 continue; // We don't want an empty cohort name
@@ -287,13 +306,12 @@ class auth_plugin_mcae extends auth_plugin_base {
 
                 if (!$DB->record_exists('cohort_members', array('cohortid'=>$cid, 'userid'=>$user->id))) {
                     cohort_add_member($cid, $user->id);
-                    add_to_log(SITEID, 'user', 'Added to cohort ID ' . $cid, "view.php?id=$user->id&course=".SITEID, $user->id, 0, $user->id);
+                    $log_add[] = $cid;
                 } else {
-                    add_to_log(SITEID, 'user', 'Already exists in cohort ID ' . $cid, "view.php?id=$user->id&course=".SITEID, $user->id, 0, $user->id);
+                    $log_exist[] = $cid;
                 };
             } else {
                 // Cohort not exist so create a new one
-                add_to_log(SITEID, 'user', 'Cohort not exist ID so screate a new one' , "view.php?id=$user->id&course=".SITEID, $user->id, 0, $user->id);
                 $newcohort = new stdClass();
                 $newcohort->name = $cohortname;
                 $newcohort->description = "created ". date("d-m-Y");
@@ -303,13 +321,12 @@ class auth_plugin_mcae extends auth_plugin_base {
                 };
                 $cid = cohort_add_cohort($newcohort);
                 cohort_add_member($cid, $user->id);
-
-                add_to_log(SITEID, 'user', 'Added to cohort ID ' . $cid, "view.php?id=$user->id&course=".SITEID, $user->id, 0, $user->id);
+                $log_new[] = $cid;
             };
             $processed[] = $cid;
         };
         $SESSION->mcautoenrolled = TRUE;
-        
+
         //Unenrol user
         if ($this->config->enableunenrol == 1) {
         //List of cohorts where this user enrolled
@@ -319,13 +336,23 @@ class auth_plugin_mcae extends auth_plugin_base {
             foreach ($enrolledcohorts as $ec) {
                 if(array_search($ec->cid, $processed) === false) {
                     cohort_remove_member($ec->cid, $uid);
-                    add_to_log(SITEID, 'user', 'Removed from cohort ID ' . $ec->cid, "view.php?id=$user->id&course=".SITEID, $user->id, 0, $user->id);
+                    $log_unenrolled[] = $ec->cid;
                 };
             };
         };
+        // LOG
+        if ($log_exist) {
+          add_to_log(SITEID, 'user', 'Already exist in cohorts IDs: ' . implode(', ', $log_exist), "view.php?id=$user->id&course=".SITEID, $user->id, 0, $user->id);
+        }
+        if ($log_add) {
+          add_to_log(SITEID, 'user', 'Added to cohorts IDs: ' . implode(', ', $log_add), "view.php?id=$user->id&course=".SITEID, $user->id, 0, $user->id);
+        }
+        if ($log_new) {
+          add_to_log(SITEID, 'user', 'Created cohorts IDs: ' . implode(', ', $log_new), "view.php?id=$user->id&course=".SITEID, $user->id, 0, $user->id);
+        }
+        if ($log_unenrolled) {
+          add_to_log(SITEID, 'user', 'Removed from cohorts IDs: ' . implode(', ', $log_unenrolled), "view.php?id=$user->id&course=".SITEID, $user->id, 0, $user->id);
+        }
 
     }
-
 }
-
-
