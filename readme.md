@@ -69,7 +69,7 @@ An email field have 3 variants:
 > Date/time fields returns unix timestamp
 
 **Split arguments:**
-Synopsis: %split(<fieldname>|<delimiter>)
+Synopsis: %split(fieldname|delimiter)
 
 Returns multiple cohorts, each of which is formed by splitting field on boundaries formed by the delimiter.
 
