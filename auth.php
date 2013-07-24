@@ -348,7 +348,7 @@ class auth_plugin_mcae extends auth_plugin_base {
           add_to_log(SITEID, 'user', 'added to cohorts', "view.php?id=$user->id&course=".SITEID, implode(', ', $log_add), 0, $user->id);
         }
         if ($log_new) {
-          add_to_log(SITEID, 'user', 'areated cohorts', "view.php?id=$user->id&course=".SITEID, implode(', ', $log_new), 0, $user->id);
+          add_to_log(SITEID, 'user', 'created cohorts', "view.php?id=$user->id&course=".SITEID, implode(', ', $log_new), 0, $user->id);
         }
         if ($log_unenrolled) {
           add_to_log(SITEID, 'user', 'removed from cohorts', "view.php?id=$user->id&course=".SITEID, implode(', ', $log_unenrolled), 0, $user->id);
