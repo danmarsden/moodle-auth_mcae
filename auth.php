@@ -342,16 +342,16 @@ class auth_plugin_mcae extends auth_plugin_base {
         };
         // LOG
         if ($log_exist) {
-          add_to_log(SITEID, 'mcae', 'Already exist in cohorts', "view.php?id=$user->id&course=".SITEID, implode(', ', $log_exist), 0, $user->id);
+          add_to_log(SITEID, 'user', 'already exist in cohorts', "view.php?id=$user->id&course=".SITEID, implode(', ', $log_exist), 0, $user->id);
         }
         if ($log_add) {
-          add_to_log(SITEID, 'mcae', 'Added to cohorts IDs: ', "view.php?id=$user->id&course=".SITEID, implode(', ', $log_add), 0, $user->id);
+          add_to_log(SITEID, 'user', 'added to cohorts', "view.php?id=$user->id&course=".SITEID, implode(', ', $log_add), 0, $user->id);
         }
         if ($log_new) {
-          add_to_log(SITEID, 'mcae', 'Created cohorts IDs: ', "view.php?id=$user->id&course=".SITEID, implode(', ', $log_new), 0, $user->id);
+          add_to_log(SITEID, 'user', 'areated cohorts', "view.php?id=$user->id&course=".SITEID, implode(', ', $log_new), 0, $user->id);
         }
         if ($log_unenrolled) {
-          add_to_log(SITEID, 'mcae', 'Removed from cohorts IDs: ', "view.php?id=$user->id&course=".SITEID, implode(', ', $log_unenrolled), 0, $user->id);
+          add_to_log(SITEID, 'user', 'removed from cohorts', "view.php?id=$user->id&course=".SITEID, implode(', ', $log_unenrolled), 0, $user->id);
         }
 
     }
