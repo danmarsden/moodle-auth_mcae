@@ -53,6 +53,7 @@ if ($ADMIN->fulltree) {
     // Additional values for email
     $fldlist[] = "<span title=\"%email_username\">%email_username</span>";
     $fldlist[] = "<span title=\"%email_domain\">%email_domain</span>";
+    $fldlist[] = "<span title=\"%email_rootdomain\">%email_rootdomain</span>";
 
     sort($fldlist);
     $help_text = implode(', ', $fldlist);
