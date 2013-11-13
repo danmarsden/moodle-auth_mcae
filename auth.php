@@ -244,6 +244,14 @@ class auth_plugin_mcae extends auth_plugin_base {
         list($email_username,$email_domain) = explode("@", $user_profile_data['%email']);
         $user_profile_data['%email_username'] = $email_username;
         $user_profile_data['%email_domain'] = $email_domain;
+        // email root domain
+        $email_domain = explode('.',$email_domain);
+        if(count($email_domain) > 2) {
+            $email_rootdomain = $email_domain[count($email_domain)-2].'.'.$email_domain[count($email_domain)-1];
+        } else {
+            $email_rootdomain = $email_domain;
+        }
+        $user_profile_data['%email_rootdomain'] = $email_rootdomain;
 
         // Delimiter
         $delimiter = $this->config->delim;
