@@ -189,7 +189,7 @@ class auth_plugin_mcae extends auth_plugin_base {
     function user_authenticated_hook(&$user, $username, $password) {
 	global $DB, $SESSION;
 
-        $context = get_context_instance(CONTEXT_SYSTEM);
+        $context = context_system::instance();
         $uid = $user->id;
         // Ignore users from don't_touch list
         $ignore = explode(",",$this->config->donttouchusers);
