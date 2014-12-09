@@ -15,7 +15,7 @@ require_once($CFG->libdir . '/adminlib.php');
 
 require_login();
 
-$context = get_context_instance(CONTEXT_SYSTEM);
+$context = context_system::instance();
 $returnurl = new moodle_url('/auth/mcae/convert.php');
 
 admin_externalpage_setup('cohorttoolmcae');
