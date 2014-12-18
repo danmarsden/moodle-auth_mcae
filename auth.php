@@ -281,15 +281,29 @@ class auth_plugin_mcae extends auth_plugin_base {
             return; //Empty mainrule
         };
 
-
-        // Split!
         foreach ($templates_tpl as $item) {
             if (preg_match('/(?<full>%split\((?<fld>%\w*)\|(?<delim>.{1,5})\))/', $item, $split_params)) {
+                // Split!
                 $splitted = explode($split_params['delim'], $user_profile_data[$split_params['fld']]);
                 foreach($splitted as $key => $val) {
                     $user_profile_data[$split_params['fld']."_$key"] = $val;
                     $templates[] = strtr($item, array("${split_params['full']}" => "${split_params['fld']}_$key"));
                 }
+            } elseif (preg_match('/(?<full>%array\((?<fld>%\w*)\|(?<path>.*)\))/', $item, $array_params)) {
+              // Array!
+              $path  = isset($array_params['path']) ? $array_params['path'] : false;
+              $field = unserialize($user_profile_data[$array_params['fld']]);
+              foreach ($field as $key => $val) {
+                if ($path and (is_array($val) or is_object($val))) {
+                  $arr = (array)$val;
+                  $text = (isset($arr[$path])) ? $arr[$path] : '';
+                } elseif (!$path and (is_array($val) or is_object($val))) {
+                  $text = implode(' - ', (array)$val);
+                } else {
+                  $text = $val;
+                }
+                $templates[] = strtr($item, array("${array_params['full']}" => $text));
+              }
             } else {
                 $templates[] = $item;
             }
