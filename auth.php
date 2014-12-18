@@ -310,10 +310,6 @@ class auth_plugin_mcae extends auth_plugin_base {
         }
 
         $processed = array();
-        $log_new = array();
-        $log_unenrolled = array();
-        $log_exist = array();
-        $log_add = array();
 
         foreach ($templates as $cohort) {
             $cohortname = strtr($cohort, $user_profile_data);
@@ -328,9 +324,6 @@ class auth_plugin_mcae extends auth_plugin_base {
 
                 if (!$DB->record_exists('cohort_members', array('cohortid'=>$cid, 'userid'=>$user->id))) {
                     cohort_add_member($cid, $user->id);
-                    $log_add[] = $cid;
-                } else {
-                    $log_exist[] = $cid;
                 };
             } else {
                 // Cohort not exist so create a new one
@@ -343,7 +336,6 @@ class auth_plugin_mcae extends auth_plugin_base {
                 };
                 $cid = cohort_add_cohort($newcohort);
                 cohort_add_member($cid, $user->id);
-                $log_new[] = $cid;
             };
             $processed[] = $cid;
         };
@@ -358,23 +350,9 @@ class auth_plugin_mcae extends auth_plugin_base {
             foreach ($enrolledcohorts as $ec) {
                 if(array_search($ec->cid, $processed) === false) {
                     cohort_remove_member($ec->cid, $uid);
-                    $log_unenrolled[] = $ec->cid;
                 };
             };
         };
-        // LOG
-        if ($log_exist) {
-          add_to_log(SITEID, 'user', 'already exist in cohorts', "view.php?id=$user->id&course=".SITEID, implode(', ', $log_exist), 0, $user->id);
-        }
-        if ($log_add) {
-          add_to_log(SITEID, 'user', 'added to cohorts', "view.php?id=$user->id&course=".SITEID, implode(', ', $log_add), 0, $user->id);
-        }
-        if ($log_new) {
-          add_to_log(SITEID, 'user', 'created cohorts', "view.php?id=$user->id&course=".SITEID, implode(', ', $log_new), 0, $user->id);
-        }
-        if ($log_unenrolled) {
-          add_to_log(SITEID, 'user', 'removed from cohorts', "view.php?id=$user->id&course=".SITEID, implode(', ', $log_unenrolled), 0, $user->id);
-        }
 
     }
 }
