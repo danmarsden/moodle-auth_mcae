@@ -5,7 +5,7 @@
  *
  * @package    auth
  * @subpackage mcae
- * @copyright  2011 Andrew "Kama" (kamasutra12@yandex.ru) 
+ * @copyright  2011 Andrew "Kama" (kamasutra12@yandex.ru)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -22,7 +22,7 @@ require_capability('moodle/cohort:view', $context, $USER->id);
 
 $cid = optional_param('cid', 0, PARAM_INT);
 
-$cohorts = $DB->get_records('cohort', array('contextid'=>$context->id));
+$cohorts = $DB->get_records('cohort', array('contextid'=>$context->id), 'name ASC');
 $select_options = '<option default value="0">'.get_string('auth_selectcohort', 'auth_mcae').'</option>';
 
 foreach($cohorts as $cohort) {
