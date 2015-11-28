@@ -30,20 +30,34 @@
  * @param array $data Complete $USER object with custom profile fields loaded
  * @return array Cleaned array created from $data
  */
-function mcae_prepare_profile_data($data) {
-    $reject = array('ajax_updatable_user_prefs', 'sesskey', 'preference', 'editing', 'access', 'message_lastpopup', 'enrol', '');
+function mcae_prepare_profile_data($data, $replace_empty = 'EMPTY') {
+    $reject = array('ajax_updatable_user_prefs', 'sesskey', 'preference', 'editing', 'access', 'message_lastpopup', 'enrol');
     if (is_array($data) or is_object($data)) {
         $new_data = array();
         foreach ($data as $key => $val) {
             if (!in_array($key, $reject)) {
-                $new_data[$key] = (is_array($val) or is_object($val)) ? mcae_prepare_profile_data($val) : substr(format_string($val), 0, 100);
+				if (is_array($val) or is_object($val)) {
+					$new_data[$key] = mcae_prepare_profile_data($val, $replace_empty);
+				} else {
+					if ($val === '' or $val === ' ' or $val === NULL) {
+						$str = ($val === false) ? 'false' : $replace_empty;
+					} else {
+						$str = ($val === true) ? 'true' : format_string("$val");
+					}
+				    $new_data[$key] = substr($str, 0, 100);
+				}
             }
         }
     } else {
-        $new_data = substr(format_string($data), 0, 100);
+		if ($data === '' or $data === ' ' or $data === NULL) {
+		    $str = ($data === false) ? 'false' : $replace_empty;
+		} else {
+		    $str = ($data === true) ? 'true' : format_string("$data");
+		}
+        $new_data = substr($str, 0, 100);
     }
     if (empty($new_data)) {
-        return format_string('EMPTY');
+        return $replace_empty;
     } else {
         return $new_data;
     }
