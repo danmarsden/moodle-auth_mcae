@@ -27,4 +27,4 @@ $plugin->version   = 2015112818;
 $plugin->component = 'auth_mcae';
 $plugin->maturity = MATURITY_STABLE;
 $plugin->requires = 2015041700;
-$plugin->release = '2.9.3';
+$plugin->release = '2.9.4';
