@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * Autoenrol cohort authentication plugin version information
+ *
+ * @package    auth
+ * @subpackage mcae
+ * @copyright  2011 Andrew "Kama" (kamasutra12@yandex.ru) 
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
     function mcae_prepare_profile_data($data) {
         $reject = array('ajax_updatable_user_prefs', 'sesskey', 'preference', 'editing', 'access', 'message_lastpopup', 'enrol', '');
         if (is_array($data) or is_object($data)) {

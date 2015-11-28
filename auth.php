@@ -9,7 +9,7 @@ require_once($CFG->dirroot.'/auth/mcae/lib.php');
 /**
  * @package    auth
  * @subpackage mcae
- * @copyright  2015 Andrew "Kama" (kamasutra12@yandex.ru)
+ * @copyright  2011 Andrew "Kama" (kamasutra12@yandex.ru)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class auth_plugin_mcae extends auth_plugin_manual {
