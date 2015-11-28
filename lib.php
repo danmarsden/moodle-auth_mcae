@@ -6,11 +6,11 @@
             $new_data = array();
             foreach ($data as $key => $val) {
                 if (!in_array($key, $reject)) {
-                    $new_data[$key] = (is_array($val) or is_object($val)) ? mcae_prepare_profile_data($val) : format_string($val);
+                    $new_data[$key] = (is_array($val) or is_object($val)) ? mcae_prepare_profile_data($val) : substr(format_string($val), 0, 100);
                 }
             }
         } else {
-            $new_data = format_string($data);
+            $new_data = substr(format_string($data), 0, 100);
         }
         if (empty($new_data)) {
             return format_string('EMPTY');

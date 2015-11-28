@@ -110,8 +110,8 @@ switch ($action) {
             $delcurrent = 1;
 
             foreach ($clist as $cid){
-                $cohort = new stdClass();
-                $cohort->id = $cid;
+                $cohort = $DB->get_record('cohort', array('contextid'=>$context->id, 'id' => $cid));
+				
                 cohort_delete_cohort($cohort);
                 $progress->update($delcurrent, $delcount, "$delcurrent / $delcount");
                 $delcurrent++;

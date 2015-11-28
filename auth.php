@@ -12,7 +12,7 @@ require_once($CFG->dirroot.'/auth/mcae/lib.php');
  * @copyright  2015 Andrew "Kama" (kamasutra12@yandex.ru)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class auth_plugin_mcae extends auth_plugin_base {
+class auth_plugin_mcae extends auth_plugin_manual {
 
     const COMPONENT_NAME = 'auth_mcae';
 
@@ -20,8 +20,14 @@ class auth_plugin_mcae extends auth_plugin_base {
      * Constructor.
      */
     function auth_plugin_mcae() {
+		global $CFG;
+		require_once($CFG->dirroot . '/lib/mustache/src/Mustache/Autoloader.php');
+		
         $this->authtype = 'mcae';
-        $config = get_config(self::COMPONENT_NAME);
+        $this->config = get_config(self::COMPONENT_NAME);
+		Mustache_Autoloader::register();
+
+		$this->mustache = new Mustache_Engine;
     }
 
     /**
@@ -108,7 +114,7 @@ class auth_plugin_mcae extends auth_plugin_base {
         $user_profile_data = mcae_prepare_profile_data($user);
 
         // Additional values for email
-        list($email_username,$email_domain) = explode("@", $fldlist['email']);
+        list($email_username,$email_domain) = explode("@", $user_profile_data['email']);
 
         // email root domain
         $email_domain_array = explode('.',$email_domain);
@@ -117,7 +123,7 @@ class auth_plugin_mcae extends auth_plugin_base {
         } else {
             $email_rootdomain = $email_domain;
         }
-        $fldlist['email'] = array('full' => $fldlist['email'], 'username' => $email_username, 'domain' => $email_domain, 'rootdomain' => $email_rootdomain);
+        $user_profile_data['email'] = array('full' => $user_profile_data['email'], 'username' => $email_username, 'domain' => $email_domain, 'rootdomain' => $email_rootdomain);
 
         // Delimiter
         $delimiter = $this->config->delim;
@@ -164,10 +170,10 @@ class auth_plugin_mcae extends auth_plugin_base {
         $processed = array();
 
         // Process templates with Mustache
-        $m = new Mustache_Engine;
+        
 
         foreach ($templates as $cohort) {
-            $cohortname = $m->render($cohort, $user_profile_data);
+            $cohortname = $this->mustache->render($cohort, $user_profile_data);
             $cohortname = (!empty($replacements)) ? strtr($cohortname, $replacements) : $cohortname;
 
             if ($cohortname == '') {
@@ -191,6 +197,9 @@ class auth_plugin_mcae extends auth_plugin_base {
                 };
                 $cid = cohort_add_cohort($newcohort);
                 cohort_add_member($cid, $user->id);
+				
+				// Prevent creation new cohorts with same names
+				$cohorts_list[$cid] = $cohortname;
             };
             $processed[] = $cid;
         };
