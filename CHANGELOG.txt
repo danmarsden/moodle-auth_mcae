@@ -1,3 +1,12 @@
+Version 3.0
+- Minor fixes
+
+Version 2.9.4
+- Minor fixes
+
+Version 2.9.3
+- Migrate to Mustache templates
+
 Version 1.1
 - Add %split function
 - Rename some variables
