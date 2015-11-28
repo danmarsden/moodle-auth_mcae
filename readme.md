@@ -1,4 +1,4 @@
-# Autoenrol cohort authentication plugin for moodle 2.x
+# Autoenrol cohort authentication plugin for moodle 3.x
 
 This authentication plugin automatically enrol users into cohorts.
 

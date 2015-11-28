@@ -1,11 +1,23 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Autoenrol cohort authentication plugin version information
- *
  * @package    auth
  * @subpackage mcae
- * @copyright  2011 Andrew "Kama" (kamasutra12@yandex.ru) 
+ * @copyright  2011 Andrew "Kama" (kamasutra12@yandex.ru)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -27,7 +39,7 @@ $clist = (isset($_POST['clist'])) ? $_POST['clist'] : false;
 
 switch ($action) {
     case 'list':
-        $cohorts = $DB->get_records('cohort', array('contextid'=>$context->id));
+        $cohorts = $DB->get_records('cohort', array('contextid'=>$context->id), 'name ASC');
         $cohorts_list = array();
 
         foreach($cohorts as $cohort) {
