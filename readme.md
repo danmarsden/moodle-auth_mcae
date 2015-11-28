@@ -39,34 +39,47 @@ If you use an Email based self registration or similar plugin and users enrolls 
 
  * Replace the your_moodle/auth/mcae folder with new one
  * Visit Site administration - Notifications page and follow the instructions
-
+ * !!! If you update to version 2.9 you must rewrite templates! See configuration section.
+ 
 ## Configuration
 
 **Template for cohort name**
 
 1 template per line.
 
-In the template you may use any characters (except '%') and profile field values. To insert a profile field value, use '%' sign and name of the field (%lastname, %firstname, etc).
-Custom profile fields have two templates: %profile_field_name and %profile_field_raw_name. It's useful with fields like 'menu of choices':
- * %profile_field_raw_name - number of the selected value
- * %profile_field_name - selected value
+In the template you may use any characters (except '{' and '}') and profile field values. To insert a profile field value, use `{{ field_name }}` tag.
 
 An email field have 3 variants:
- * %email - full email
- * %email_username - only username
- * %email_domain - only domain
+ * `{{ email.full }}` - full email
+ * `{{ email.username }}` - only username
+ * `{{ email.domain }}` - only domain
+ * `{{ email.rootdomain }}` - root domain
 
-> **Note:** Profile field templates is case sensitive. %username and %UserName are two different fields!
+## By default moodle provides this fields
 
-> Custom profile field types:
+{{ id }}, {{ auth }}, {{ confirmed }}, {{ policyagreed }}, {{ deleted }}, {{ suspended }}, {{ mnethostid }}, {{ username }}, {{ idnumber }}, {{ firstname }}, {{ lastname }},
+{{ email.full }}, {{ email.username }}, {{ email.domain }}, {{ email.rootdomain }}, {{ emailstop }},
+{{ icq }}, {{ skype }}, {{ yahoo }}, {{ aim }}, {{ msn }}, {{ phone1 }}, {{ phone2 }},
+{{ institution }}, {{ department }}, {{ address }}, {{ city }}, {{ country }}, {{ lang }},
+{{ calendartype }}, {{ theme }}, {{ timezone }}, {{ firstaccess }}, {{ lastaccess }}, {{ lastlogin }}, {{ currentlogin }}, {{ lastip }},
+{{ secret }}, {{ picture }}, {{ url }}, {{ descriptionformat }}, {{ mailformat }}, {{ maildigest }}, {{ maildisplay }}, {{ autosubscribe }}, {{ trackforums }},
+{{ timecreated }}, {{ timemodified }}, {{ trustbitmask }}, {{ imagealt }}, {{ lastnamephonetic }}, {{ firstnamephonetic }}, {{ middlename }}, {{ alternatename }},
+{{ lastcourseaccess }}, {{ currentcourseaccess }}, {{ groupmember }}
 
-> 'Textarea' type have only 'raw' variant. All HTML tags is removed.
+Additional tags become available if you have some custom profile fields.
+For example if you create custom profile fields
+ * `checkboxtest` - type Checkbox
+ * `datetimetest` - type Date/Time
+ * `droptest` - type Dropdown menu
+ * `textinputtext` - type Text input
+ * and `textareatest` - type Text area
 
-> 'Text input' returns the same value in both variants
+You be able to use this tags:
+{{ profile.checkboxtest }}, {{ profile.datetimetest }}, {{ profile.droptest }}, {{ profile.textinputtext }}, {{ profile_field_checkboxtest }}, 
+{{ profile_field_datetimetest }}, {{ profile_field_droptest }}, {{ profile_field_textareatest.text }}, {{ profile_field_textareatest.format }}, 
+{{ profile_field_textinputtext }}
 
-> Checkboxes returns 1 or 0 in both variants.
-
-> Date/time fields returns unix timestamp
+> **Note:** Profile field templates is case sensitive. `{{ username }}` and `{{ UserName }}` are two different fields!
 
 **Split arguments:**
 Synopsis: %split(fieldname|delimiter)
@@ -74,14 +87,14 @@ Synopsis: %split(fieldname|delimiter)
 Returns multiple cohorts, each of which is formed by splitting field on boundaries formed by the delimiter.
 
 Arguments:
- * fieldname - Profile field name with '%' sign.
+ * fieldname - Profile field name. The same as tag, but without '{{' and '}}'
  * delimiter - The boundary string. 1 - 5 signs.
 
 > **Example:**
 
 > User John set custom profile field "Known languages" to "English, Spanish, Chinese"
 
-> Main template contains string "Language - %split(%knownlanguage|, )"
+> Main template contains string "Language - %split(knownlanguage|, )"
 
 > John will be enrolled in 3 cohorts: Language - English, Language - Spanish and Language - Chinese
 
@@ -97,6 +110,8 @@ You can change the cohort name after it's generation.
 1 replacement per line, format - old value|new value
 
     very long cohort name|shortname
+
+> **Note:** The name must not be longer than 100 characters or it will be stripped
 
 **Unenrol**
 
@@ -125,9 +140,9 @@ You wnat to enrol many users into cohorts like "course - status" than enrol coho
 
 At configuration page set:
 
-Main template to %profile_field_course - %profile_field_status
+Main template to `{{ profile_field_course }} - {{ profile_field_status }}`
 
-Empty field text to 'none'
+Empty field text to ` none `
 
 **Result:**
 

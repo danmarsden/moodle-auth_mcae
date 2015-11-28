@@ -4,6 +4,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->libdir.'/authlib.php');
 require_once($CFG->dirroot.'/cohort/lib.php');
 require_once($CFG->dirroot.'/user/profile/lib.php');
+require_once($CFG->dirroot.'/auth/mcae/lib.php');
 
 /**
  * @package    auth
@@ -11,123 +12,23 @@ require_once($CFG->dirroot.'/user/profile/lib.php');
  * @copyright  2011 Andrew "Kama" (kamasutra12@yandex.ru)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class auth_plugin_mcae extends auth_plugin_base {
+class auth_plugin_mcae extends auth_plugin_manual {
+
+    const COMPONENT_NAME = 'auth_mcae';
 
     /**
      * Constructor.
      */
     function auth_plugin_mcae() {
+		global $CFG;
+		require_once($CFG->dirroot . '/lib/mustache/src/Mustache/Autoloader.php');
+		
         $this->authtype = 'mcae';
-        $this->config = get_config('auth_mcae');
+        $this->config = get_config(self::COMPONENT_NAME);
+		Mustache_Autoloader::register();
+
+		$this->mustache = new Mustache_Engine;
     }
-
-    /**
-     * Returns true if the username and password work and false if they are
-     * wrong or don't exist. (Non-mnet accounts only!)
-     *
-     * @param string $username The username
-     * @param string $password The password
-     * @return bool Authentication success or failure.
-     */
-    function user_login($username, $password) {
-        global $CFG, $DB, $USER;
-        if (!$user = $DB->get_record('user', array('username'=>$username, 'mnethostid'=>$CFG->mnet_localhost_id))) {
-            return false;
-        }
-        if (!validate_internal_user_password($user, $password)) {
-            return false;
-        }
-        if ($password === 'changeme') {
-            // force the change - this is deprecated and it makes sense only for manual auth,
-            // because most other plugins can not change password easily or
-            // passwords are always specified by users
-            set_user_preference('auth_forcepasswordchange', true, $user->id);
-        }
-        return true;
-    }
-
-    /**
-     * Updates the user's password.
-     *
-     * Called when the user password is updated.
-     *
-     * @param  object  $user        User table object
-     * @param  string  $newpassword Plaintext password
-     * @return boolean result
-     */
-    function user_update_password($user, $newpassword) {
-        $user = get_complete_user_data('id', $user->id);
-        return update_internal_user_password($user, $newpassword);
-    }
-
-    function prevent_local_passwords() {
-        return false;
-    }
-
-    /**
-     * Returns true if this authentication plugin is 'internal'.
-     *
-     * @return bool
-     */
-    function is_internal() {
-        return true;
-    }
-
-    /**
-     * Returns true if this authentication plugin can change the user's
-     * password.
-     *
-     * @return bool
-     */
-    function can_change_password() {
-        return true;
-    }
-
-    /**
-     * Returns the URL for changing the user's pw, or empty if the default can
-     * be used.
-     *
-     * @return moodle_url
-     */
-    function change_password_url() {
-        return null;
-    }
-
-    /**
-     * Returns true if plugin allows resetting of internal password.
-     *
-     * @return bool
-     */
-    function can_reset_password() {
-        return true;
-    }
-
-   /**
-    * Confirm the new user as registered. This should normally not be used,
-    * but it may be necessary if the user auth_method is changed to manual
-    * before the user is confirmed.
-    *
-    * @param string $username
-    * @param string $confirmsecret
-    */
-    function user_confirm($username, $confirmsecret = null) {
-        global $DB;
-
-        $user = get_complete_user_data('username', $username);
-
-        if (!empty($user)) {
-            if ($user->confirmed) {
-                return AUTH_CONFIRM_ALREADY;
-            } else {
-                $DB->set_field("user", "confirmed", 1, array("id"=>$user->id));
-                $DB->set_field("user", "firstaccess", time(), array("id"=>$user->id));
-                return AUTH_CONFIRM_OK;
-            }
-        } else  {
-            return AUTH_CONFIRM_ERROR;
-        }
-    }
-
 
     /**
      * Processes and stores configuration data for this authentication plugin.
@@ -155,29 +56,16 @@ class auth_plugin_mcae extends auth_plugin_base {
 	    $config->enableunenrol = 0;
 	}
         // save settings
-        set_config('mainrule_fld', $config->mainrule_fld, 'auth_mcae');
-        set_config('secondrule_fld', $config->secondrule_fld, 'auth_mcae');
-        set_config('replace_arr', $config->replace_arr, 'auth_mcae');
-        set_config('delim', $config->delim, 'auth_mcae');
-        set_config('donttouchusers', $config->donttouchusers, 'auth_mcae');
-        set_config('enableunenrol', $config->enableunenrol, 'auth_mcae');
+        set_config('mainrule_fld',   $config->mainrule_fld,   self::COMPONENT_NAME);
+        set_config('secondrule_fld', $config->secondrule_fld, self::COMPONENT_NAME);
+        set_config('replace_arr',    $config->replace_arr,    self::COMPONENT_NAME);
+        set_config('delim',          $config->delim,          self::COMPONENT_NAME);
+        set_config('donttouchusers', $config->donttouchusers, self::COMPONENT_NAME);
+        set_config('enableunenrol',  $config->enableunenrol,  self::COMPONENT_NAME);
 
         return true;
     }
 
-    /**
-     * Called when the user record is updated.
-     * Modifies user in external database. It takes olduser (before changes) and newuser (after changes)
-     * compares information saved modified information to external db.
-     *
-     * @param mixed $olduser     Userobject before modifications    (without system magic quotes)
-     * @param mixed $newuser     Userobject new modified userobject (without system magic quotes)
-     * @return boolean true if updated or update ignored; false if error
-     *
-     */
-//    function user_update($olduser, $newuser) {
-//        return true;
-//  }
     /**
      * Post authentication hook.
      * This method is called from authenticate_user_login() for all enabled auth plugins.
@@ -208,7 +96,7 @@ class auth_plugin_mcae extends auth_plugin_base {
 // ********************** Get COHORTS data
         $clause = array('contextid'=>$context->id);
         if ($this->config->enableunenrol == 1) {
-            $clause['component'] = 'auth_mcae';
+            $clause['component'] = self::COMPONENT_NAME;
         };
 
         $cohorts = $DB->get_records('cohort', $clause);
@@ -222,36 +110,20 @@ class auth_plugin_mcae extends auth_plugin_base {
 
         // Get advanced user data
         profile_load_data($user);
-        $user_profile_data = array();
-        foreach ($user as $key => $val){
-            if (is_array($val)) {
-                $text = (isset($val['text'])) ? $val['text'] : '';
-            } else {
-                $text = $val;
-            };
-
-            // Raw custom profile fields
-            $fld_key = preg_replace('/profile_field_/', 'profile_field_raw_', $key);
-            $user_profile_data["%$fld_key"] = ($text == '') ? format_string($this->config->secondrule_fld) : format_string($text);
-        };
-
-        // Custom profile field values
-        foreach ($user->profile as $key => $val) {
-            $user_profile_data["%profile_field_$key"] = ($val == '') ? format_string($this->config->secondrule_fld) : format_string($val);
-        };
+		profile_load_custom_fields($user);
+        $user_profile_data = mcae_prepare_profile_data($user);
 
         // Additional values for email
-        list($email_username,$email_domain) = explode("@", $user_profile_data['%email']);
-        $user_profile_data['%email_username'] = $email_username;
-        $user_profile_data['%email_domain'] = $email_domain;
+        list($email_username,$email_domain) = explode("@", $user_profile_data['email']);
+
         // email root domain
-        $email_domain = explode('.',$email_domain);
-        if(count($email_domain) > 2) {
-            $email_rootdomain = $email_domain[count($email_domain)-2].'.'.$email_domain[count($email_domain)-1];
+        $email_domain_array = explode('.',$email_domain);
+        if(count($email_domain_array) > 2) {
+            $email_rootdomain = $email_domain_array[count($email_domain_array)-2].'.'.$email_domain_array[count($email_domain_array)-1];
         } else {
             $email_rootdomain = $email_domain;
         }
-        $user_profile_data['%email_rootdomain'] = $email_rootdomain;
+        $user_profile_data['email'] = array('full' => $user_profile_data['email'], 'username' => $email_username, 'domain' => $email_domain, 'rootdomain' => $email_rootdomain);
 
         // Delimiter
         $delimiter = $this->config->delim;
@@ -281,29 +153,15 @@ class auth_plugin_mcae extends auth_plugin_base {
             return; //Empty mainrule
         };
 
+        // Find %split function
         foreach ($templates_tpl as $item) {
-            if (preg_match('/(?<full>%split\((?<fld>%\w*)\|(?<delim>.{1,5})\))/', $item, $split_params)) {
+            if (preg_match('/(?<full>%split\((?<fld>\w*)\|(?<delim>.{1,5})\))/', $item, $split_params)) {
                 // Split!
                 $splitted = explode($split_params['delim'], $user_profile_data[$split_params['fld']]);
                 foreach($splitted as $key => $val) {
                     $user_profile_data[$split_params['fld']."_$key"] = $val;
-                    $templates[] = strtr($item, array("${split_params['full']}" => "${split_params['fld']}_$key"));
+                    $templates[] = strtr($item, array("${split_params['full']}" => "{{ ${split_params['fld']}_$key }}"));
                 }
-            } elseif (preg_match('/(?<full>%array\((?<fld>%\w*)\|(?<path>.*)\))/', $item, $array_params)) {
-              // Array!
-              $path  = isset($array_params['path']) ? $array_params['path'] : false;
-              $field = unserialize($user_profile_data[$array_params['fld']]);
-              foreach ($field as $key => $val) {
-                if ($path and (is_array($val) or is_object($val))) {
-                  $arr = (array)$val;
-                  $text = (isset($arr[$path])) ? $arr[$path] : '';
-                } elseif (!$path and (is_array($val) or is_object($val))) {
-                  $text = implode(' - ', (array)$val);
-                } else {
-                  $text = $val;
-                }
-                $templates[] = strtr($item, array("${array_params['full']}" => $text));
-              }
             } else {
                 $templates[] = $item;
             }
@@ -311,8 +169,11 @@ class auth_plugin_mcae extends auth_plugin_base {
 
         $processed = array();
 
+        // Process templates with Mustache
+        
+
         foreach ($templates as $cohort) {
-            $cohortname = strtr($cohort, $user_profile_data);
+            $cohortname = $this->mustache->render($cohort, $user_profile_data);
             $cohortname = (!empty($replacements)) ? strtr($cohortname, $replacements) : $cohortname;
 
             if ($cohortname == '') {
@@ -336,6 +197,9 @@ class auth_plugin_mcae extends auth_plugin_base {
                 };
                 $cid = cohort_add_cohort($newcohort);
                 cohort_add_member($cid, $user->id);
+				
+				// Prevent creation new cohorts with same names
+				$cohorts_list[$cid] = $cohortname;
             };
             $processed[] = $cid;
         };
@@ -355,4 +219,5 @@ class auth_plugin_mcae extends auth_plugin_base {
         };
 
     }
+
 }
