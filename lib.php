@@ -36,16 +36,16 @@ function mcae_prepare_profile_data($data, $replace_empty = 'EMPTY') {
         $new_data = array();
         foreach ($data as $key => $val) {
             if (!in_array($key, $reject)) {
-				if (is_array($val) or is_object($val)) {
-					$new_data[$key] = mcae_prepare_profile_data($val, $replace_empty);
-				} else {
-					if ($val === '' or $val === ' ' or $val === NULL) {
-						$str = ($val === false) ? 'false' : $replace_empty;
-					} else {
-						$str = ($val === true) ? 'true' : format_string("$val");
-					}
-				    $new_data[$key] = substr($str, 0, 100);
-				}
+		if (is_array($val) or is_object($val)) {
+			$new_data[$key] = mcae_prepare_profile_data($val, $replace_empty);
+		} else {
+			if ($val === '' or $val === ' ' or $val === NULL) {
+				$str = ($val === false) ? 'false' : $replace_empty;
+			} else {
+				$str = ($val === true) ? 'true' : format_string("$val");
+			}
+		    $new_data[$key] = substr($str, 0, 100);
+		}
             }
         }
     } else {
