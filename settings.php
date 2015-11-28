@@ -14,6 +14,7 @@ defined('MOODLE_INTERNAL') || die;
 global $USER;
 
 require_once($CFG->dirroot.'/user/profile/lib.php');
+require_once($CFG->dirroot.'/auth/mcae/lib.php');
 
 if ($hassiteconfig) { // needs this condition or there is error on login page
     $ADMIN->add('accounts', new admin_externalpage('cohorttoolmcae',
@@ -34,29 +35,26 @@ if ($ADMIN->fulltree) {
     $usr_helper = $USER;
 
     profile_load_data($usr_helper);
-    foreach ($usr_helper as $key => $val){
-        $fld = preg_replace('/profile_field_/', 'profile_field_raw_', $key);
-        if (is_array($val)) {
-            if (isset($val['text'])) {
-                $fldlist[] = "<span title=\"%$fld\">%$fld</span>";
-            };
-        } else {
-            $fldlist[] = "<span title=\"%$fld\">%$fld</span>";
-        };
-    }; 
-
-    // Custom profile field values
-    foreach ($usr_helper->profile as $key => $val) {
-        $fldlist[] = "<span title=\"%profile_field_$key\">%profile_field_$key</span>";
-    };
-
+	profile_load_custom_fields($usr_helper);
+    	
+    $fldlist = mcae_prepare_profile_data($usr_helper);
+	
     // Additional values for email
-    $fldlist[] = "<span title=\"%email_username\">%email_username</span>";
-    $fldlist[] = "<span title=\"%email_domain\">%email_domain</span>";
-    $fldlist[] = "<span title=\"%email_rootdomain\">%email_rootdomain</span>";
+    list($email_username,$email_domain) = explode("@", $fldlist['email']);
 
-    sort($fldlist);
-    $help_text = implode(', ', $fldlist);
+    // email root domain
+    $email_domain_array = explode('.',$email_domain);
+    if(count($email_domain_array) > 2) {
+        $email_rootdomain = $email_domain_array[count($email_domain_array)-2].'.'.$email_domain_array[count($email_domain_array)-1];
+    } else {
+        $email_rootdomain = $email_domain;
+    }
+    $fldlist['email'] = array('full' => $fldlist['email'], 'username' => $email_username, 'domain' => $email_domain, 'rootdomain' => $email_rootdomain);
+	
+    $help_array = array();
+    mcae_print_profile_data($fldlist, '', $help_array);
+
+    $help_text = implode(', ', $help_array);
 
     $settings->add(new admin_setting_heading('auth_mcae_profile_help', get_string('auth_profile_help', 'auth_mcae'), $help_text));
 

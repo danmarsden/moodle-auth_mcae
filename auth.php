@@ -4,6 +4,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->libdir.'/authlib.php');
 require_once($CFG->dirroot.'/cohort/lib.php');
 require_once($CFG->dirroot.'/user/profile/lib.php');
+require_once($CFG->dirroot.'/auth/mcae/lib.php');
 
 /**
  * @package    auth
@@ -103,21 +104,20 @@ class auth_plugin_mcae extends auth_plugin_base {
 
         // Get advanced user data
         profile_load_data($user);
-        $user_profile_data = $this->_prepare_profile_data($user);
+		profile_load_custom_fields($user);
+        $user_profile_data = mcae_prepare_profile_data($user);
 
         // Additional values for email
-        list($email_username,$email_domain) = explode("@", $user_profile_data['email']);
-        $user_profile_data['email_username'] = $email_username;
-        $user_profile_data['email_domain'] = $email_domain;
+        list($email_username,$email_domain) = explode("@", $fldlist['email']);
 
         // email root domain
-        $email_domain = explode('.',$email_domain);
-        if(count($email_domain) > 2) {
-            $email_rootdomain = $email_domain[count($email_domain)-2].'.'.$email_domain[count($email_domain)-1];
+        $email_domain_array = explode('.',$email_domain);
+        if(count($email_domain_array) > 2) {
+            $email_rootdomain = $email_domain_array[count($email_domain_array)-2].'.'.$email_domain_array[count($email_domain_array)-1];
         } else {
             $email_rootdomain = $email_domain;
         }
-        $user_profile_data['email_rootdomain'] = $email_rootdomain;
+        $fldlist['email'] = array('full' => $fldlist['email'], 'username' => $email_username, 'domain' => $email_domain, 'rootdomain' => $email_rootdomain);
 
         // Delimiter
         $delimiter = $this->config->delim;
@@ -209,22 +209,6 @@ class auth_plugin_mcae extends auth_plugin_base {
             };
         };
 
-    }
-
-    private function _prepare_profile_data($data) {
-        if (is_array($data) or is_object($data)) {
-            $new_data = array();
-            foreach ($data as $key => $val) {
-                $new_data[$key] = (is_array($val) or is_object($val)) ? $this->_prepare_profile_data($val) : format_string($val);
-            }
-        } else {
-            $new_data = format_string($data);
-        }
-        if (empty($new_data)) {
-            return format_string($this->config->secondrule_fld);
-        } else {
-            return $new_data;
-        }
     }
 
 }
