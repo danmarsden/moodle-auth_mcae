@@ -42,9 +42,9 @@ if ($hassiteconfig) { // needs this condition or there is error on login page
 if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_configtextarea('auth_mcae/mainrule_fld', get_string('auth_mainrule_fld', 'auth_mcae'), '', ''));
 
-// Profile field helper
+    // Profile field helper
     $fldlist = array();
-    $usr_helper = $USER;
+    $usr_helper = $DB->get_record('user', array('id' => 2));
 
     profile_load_data($usr_helper);
 	profile_load_custom_fields($usr_helper);
@@ -54,7 +54,7 @@ if ($ADMIN->fulltree) {
     // Additional values for email
     list($email_username,$email_domain) = explode("@", $fldlist['email']);
 
-    // email root domain
+    // Email root domain
     $email_domain_array = explode('.',$email_domain);
     if(count($email_domain_array) > 2) {
         $email_rootdomain = $email_domain_array[count($email_domain_array)-2].'.'.$email_domain_array[count($email_domain_array)-1];
@@ -63,9 +63,13 @@ if ($ADMIN->fulltree) {
     }
     $fldlist['email'] = array('full' => $fldlist['email'], 'username' => $email_username, 'domain' => $email_domain, 'rootdomain' => $email_rootdomain);
 	
+    //print_r($fldlist);
     $help_array = array();
     mcae_print_profile_data($fldlist, '', $help_array);
 
+    //print_r($usr_helper);
+    //print_r($help_array);
+	
     $help_text = implode(', ', $help_array);
 
     $settings->add(new admin_setting_heading('auth_mcae_profile_help', get_string('auth_profile_help', 'auth_mcae'), $help_text));

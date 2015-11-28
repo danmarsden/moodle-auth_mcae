@@ -127,7 +127,7 @@ class auth_plugin_mcae extends auth_plugin_manual {
         // Get advanced user data
         profile_load_data($user);
 		profile_load_custom_fields($user);
-        $user_profile_data = mcae_prepare_profile_data($user);
+        $user_profile_data = mcae_prepare_profile_data($user, $this->config->secondrule_fld);
 
         // Additional values for email
         list($email_username,$email_domain) = explode("@", $user_profile_data['email']);

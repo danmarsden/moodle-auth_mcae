@@ -39,7 +39,7 @@ $clist = (isset($_POST['clist'])) ? $_POST['clist'] : false;
 
 switch ($action) {
     case 'list':
-        $cohorts = $DB->get_records('cohort', array('contextid'=>$context->id));
+        $cohorts = $DB->get_records('cohort', array('contextid'=>$context->id), 'name ASC');
         $cohorts_list = array();
 
         foreach($cohorts as $cohort) {
