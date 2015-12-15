@@ -74,7 +74,7 @@ For example if you create custom profile fields
  * `textinputtext` - type Text input
  * and `textareatest` - type Text area
 
-You be able to use these tags:
+You are able to use these tags:
 {{ profile.checkboxtest }}, {{ profile.datetimetest }}, {{ profile.droptest }}, {{ profile.textinputtext }}, {{ profile_field_checkboxtest }}, 
 {{ profile_field_datetimetest }}, {{ profile_field_droptest }}, {{ profile_field_textareatest.text }}, {{ profile_field_textareatest.format }}, 
 {{ profile_field_textinputtext }}
