@@ -1,6 +1,6 @@
 # Autoenrol cohort authentication plugin for moodle 3.x
 
-This authentication plugin automatically enrol users into cohorts.
+This authentication plugin automatically enrolls users into cohorts.
 
 Cohort name depends on user profile field.
 
@@ -12,7 +12,7 @@ Cohorts are created in CONTEXT_SYSTEM.
  * Copy the 'mcae' folder into your_moodle/auth
  * Visit Site administration - Notifications page and follow the instructions
 
-If you use an Email based self registration or similar plugin and users enrolls into cohort after second login copy/paste this code into moodle/themes/your_theme/layout/general.php (or default.php)
+If you use an Email based self registration or similar plugin and users enrolls into cohort after **second login** copy/paste this code into moodle/themes/your_theme/layout/general.php (or default.php)
 
 > **NOTE:** Enable and configure mcae plugin first!
 
@@ -37,7 +37,7 @@ If you use an Email based self registration or similar plugin and users enrolls 
 
 ## Upgrade
 
- * Replace the your_moodle/auth/mcae folder with new one
+ * Replace the your_moodle/auth/mcae folder with the new version
  * Visit Site administration - Notifications page and follow the instructions
  * !!! If you update to version 2.9 you must rewrite templates! See configuration section.
  
@@ -49,7 +49,7 @@ If you use an Email based self registration or similar plugin and users enrolls 
 
 In the template you may use any characters (except '{' and '}') and profile field values. To insert a profile field value, use `{{ field_name }}` tag.
 
-An email field have 3 variants:
+An email fields have 4 variants:
  * `{{ email.full }}` - full email
  * `{{ email.username }}` - only username
  * `{{ email.domain }}` - only domain
@@ -74,12 +74,12 @@ For example if you create custom profile fields
  * `textinputtext` - type Text input
  * and `textareatest` - type Text area
 
-You be able to use this tags:
+You are able to use these tags:
 {{ profile.checkboxtest }}, {{ profile.datetimetest }}, {{ profile.droptest }}, {{ profile.textinputtext }}, {{ profile_field_checkboxtest }}, 
 {{ profile_field_datetimetest }}, {{ profile_field_droptest }}, {{ profile_field_textareatest.text }}, {{ profile_field_textareatest.format }}, 
 {{ profile_field_textinputtext }}
 
-> **Note:** Profile field templates is case sensitive. `{{ username }}` and `{{ UserName }}` are two different fields!
+> **Note:** Profile field templates are case sensitive. `{{ username }}` and `{{ UserName }}` are two different fields!
 
 **Split arguments:**
 Synopsis: %split(fieldname|delimiter)
@@ -88,11 +88,11 @@ Returns multiple cohorts, each of which is formed by splitting field on boundari
 
 Arguments:
  * fieldname - Profile field name. The same as tag, but without '{{' and '}}'
- * delimiter - The boundary string. 1 - 5 signs.
+ * delimiter - The boundary string. 1 - 5 characters.
 
 > **Example:**
 
-> User John set custom profile field "Known languages" to "English, Spanish, Chinese"
+> User John fills the custom profile field "Known languages" with the value "English, Spanish, Chinese"
 
 > Main template contains string "Language - %split(knownlanguage|, )"
 
@@ -111,13 +111,13 @@ You can change the cohort name after it's generation.
 
     very long cohort name|shortname
 
-> **Note:** The name must not be longer than 100 characters or it will be stripped
+> **Note:** The name must not be longer than 100 characters or it will be truncated
 
-**Unenrol**
+**Unenroll**
 
-Unenrol users from cohorts after profile change.
+Unenroll users from cohorts after profile change.
 
-To use an unenrol feature:
+To use an unenroll feature:
 
  * Go to Plugins - Authentication - Autoenrol cohort and enable unenrol function
  * Go to yourmoodle/auth/mcae/convert.php and convert cohorts you want to "auth_mcae".
@@ -146,13 +146,13 @@ Empty field text to ` none `
 
 **Result:**
 
- * When 1st course student logins, he enrol to cohort named "1 - student"
- * When 1st course teacher logins, he enrol to cohort named "1 - teacher"
- * When admin logins, he enrol to cohort named "none - admin" (Course not set, status - admin)
+ * When 1st course student logs in, he's enrolled in a cohort named "1 - student"
+ * When 1st course teacher logs in, he's enrolled in a cohort named "1 - teacher"
+ * When admin logins, he's enrolled in a cohort named "none - admin" (Course not set, status - admin)
 
 To rename "none - admin" cohort to "Administration" you must set a replacement array field at the configuration page
 In our case: none - admin|Administrator
 
 **Result:**
 
-When admin logins, he enrol to cohort named "Administrator"
+When admin logins, he's enrolled in a cohort named "Administrator"
