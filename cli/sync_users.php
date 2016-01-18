@@ -31,11 +31,16 @@ if (!is_enabled_auth('mcae')) {
 }
 
 $auth  = get_auth_plugin('mcae');
-$users = $DB-get_records('users', array('deleted' => false));
+$users = $DB-get_records('users', array('deleted' => 0));
 
-echo "Start transaction.";
+echo "Start transaction.\n";
+$transaction = $DB->start_delegated_transaction();
+
 foreach ($users as $user) {
   echo "  Update user ${user->username} . . . ";
+  $auth->user_authenticated_hook($user, $username, '');
   echo "done.\n"
 }
-echo "\nFinish\n";
+
+$transaction->allow_commit();
+exit("\nFinish\n");
