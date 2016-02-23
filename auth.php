@@ -223,8 +223,8 @@ class auth_plugin_mcae extends auth_plugin_manual {
         // Unenrol user.
         if ($this->config->enableunenrol == 1) {
             // List of cohorts where this user enrolled.
-            $sql = "SELECT c.id AS cid FROM {cohort} c JOIN {cohort_members} cm ON cm.cohortid = c.id WHERE c.component = 'auth_mcae' AND cm.userid = $uid";
-            $enrolledcohorts = $DB->get_records_sql($sql);
+            $sql = "SELECT c.id AS cid FROM {cohort} c JOIN {cohort_members} cm ON cm.cohortid = c.id WHERE c.component = 'auth_mcae' AND cm.userid = ?";
+            $enrolledcohorts = $DB->get_records_sql($sql, array($uid));
 
             foreach ($enrolledcohorts as $ec) {
                 if (array_search($ec->cid, $processed) === false) {
