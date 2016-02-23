@@ -104,7 +104,7 @@ class auth_plugin_mcae extends auth_plugin_manual {
         };
 
         // Ignore guests.
-        if ($uid < 2) {
+        if (isguestuser($user)) {
             $SESSION->mcautoenrolled = TRUE;
             return true;
         };
@@ -198,7 +198,7 @@ class auth_plugin_mcae extends auth_plugin_manual {
             $cid = array_search($cohortname, $cohorts_list);
             if ($cid !== false) {
 
-                if (!$DB->record_exists('cohort_members', array('cohortid'=>$cid, 'userid'=>$user->id))) {
+                if (!$DB->record_exists('cohort_members', array('cohortid' => $cid, 'userid' => $user->id))) {
                     cohort_add_member($cid, $user->id);
                 };
             } else {
