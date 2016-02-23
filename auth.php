@@ -35,7 +35,7 @@ class auth_plugin_mcae extends auth_plugin_manual {
     /**
      * Constructor.
      */
-    function auth_plugin_mcae() {
+    public function __construct() {
 		global $CFG;
 		require_once($CFG->dirroot . '/lib/mustache/src/Mustache/Autoloader.php');
 		
