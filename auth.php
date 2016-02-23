@@ -36,14 +36,14 @@ class auth_plugin_mcae extends auth_plugin_manual {
      * Constructor.
      */
     public function __construct() {
-		global $CFG;
-		require_once($CFG->dirroot . '/lib/mustache/src/Mustache/Autoloader.php');
-		
+        global $CFG;
+        require_once($CFG->dirroot . '/lib/mustache/src/Mustache/Autoloader.php');
+
         $this->authtype = 'mcae';
         $this->config = get_config(self::COMPONENT_NAME);
-		Mustache_Autoloader::register();
+        Mustache_Autoloader::register();
 
-		$this->mustache = new Mustache_Engine;
+        $this->mustache = new Mustache_Engine;
     }
 
     /**
@@ -51,27 +51,27 @@ class auth_plugin_mcae extends auth_plugin_manual {
      * $this->config->somefield
      */
     function process_config($config) {
-        // set to defaults if undefined
+        // Set to defaults if undefined.
 
-	if (!isset($config->mainrule_fld)) {
-	    $config->mainrule_fld = '';
-	}
-	if (!isset($config->secondrule_fld)) {
-	    $config->secondrule_fld = 'n/a';
-	}
-	if (!isset($config->replace_arr)) {
-	    $config->replace_arr = '';
-	}
-	if (!isset($config->delim)) {
-	    $config->delim = 'CR+LF';
-	}
-	if (!isset($config->donttouchusers)) {
-	    $config->donttouchusers = '';
-	}
-	if (!isset($config->enableunenrol)) {
-	    $config->enableunenrol = 0;
-	}
-        // save settings
+        if (!isset($config->mainrule_fld)) {
+            $config->mainrule_fld = '';
+        }
+        if (!isset($config->secondrule_fld)) {
+            $config->secondrule_fld = 'n/a';
+        }
+        if (!isset($config->replace_arr)) {
+            $config->replace_arr = '';
+        }
+        if (!isset($config->delim)) {
+            $config->delim = 'CR+LF';
+        }
+        if (!isset($config->donttouchusers)) {
+            $config->donttouchusers = '';
+        }
+        if (!isset($config->enableunenrol)) {
+            $config->enableunenrol = 0;
+        }
+        // Save settings.
         set_config('mainrule_fld',   $config->mainrule_fld,   self::COMPONENT_NAME);
         set_config('secondrule_fld', $config->secondrule_fld, self::COMPONENT_NAME);
         set_config('replace_arr',    $config->replace_arr,    self::COMPONENT_NAME);
@@ -91,26 +91,26 @@ class auth_plugin_mcae extends auth_plugin_manual {
      * @param string $password plain text password (with system magic quotes)
      */
     function user_authenticated_hook(&$user, $username, $password) {
-	global $DB, $SESSION;
+        global $DB, $SESSION;
 
         $context = context_system::instance();
         $uid = $user->id;
-        // Ignore users from don't_touch list
-        $ignore = explode(",",$this->config->donttouchusers);
+        // Ignore users from don't_touch list.
+        $ignore = explode(",", $this->config->donttouchusers);
 
         if (!empty($ignore) AND array_search($username, $ignore) !== false) {
             $SESSION->mcautoenrolled = TRUE;
             return true;
         };
 
-        // Ignore guests
+        // Ignore guests.
         if ($uid < 2) {
             $SESSION->mcautoenrolled = TRUE;
             return true;
         };
 
-// ********************** Get COHORTS data
-        $clause = array('contextid'=>$context->id);
+        // ********************** Get COHORTS data.
+        $clause = array('contextid' => $context->id);
         if ($this->config->enableunenrol == 1) {
             $clause['component'] = self::COMPONENT_NAME;
         };
@@ -118,24 +118,24 @@ class auth_plugin_mcae extends auth_plugin_manual {
         $cohorts = $DB->get_records('cohort', $clause);
 
         $cohorts_list = array();
-        foreach($cohorts as $cohort) {
+        foreach ($cohorts as $cohort) {
             $cid = $cohort->id;
-	    $cname = format_string($cohort->name);
+            $cname = format_string($cohort->name);
             $cohorts_list[$cid] = $cname;
         }
 
-        // Get advanced user data
+        // Get advanced user data.
         profile_load_data($user);
-		profile_load_custom_fields($user);
+        profile_load_custom_fields($user);
         $user_profile_data = mcae_prepare_profile_data($user, $this->config->secondrule_fld);
 
-        // Additional values for email
+        // Additional values for email.
         list($email_username,$email_domain) = explode("@", $user_profile_data['email']);
 
-        // email root domain
+        // Email root domain.
         $email_domain_array = explode('.',$email_domain);
-        if(count($email_domain_array) > 2) {
-            $email_rootdomain = $email_domain_array[count($email_domain_array)-2].'.'.$email_domain_array[count($email_domain_array)-1];
+        if (count($email_domain_array) > 2) {
+            $email_rootdomain = $email_domain_array[count($email_domain_array) - 2].'.'.$email_domain_array[count($email_domain_array) - 1];
         } else {
             $email_rootdomain = $email_domain;
         }
@@ -145,7 +145,7 @@ class auth_plugin_mcae extends auth_plugin_manual {
         $delimiter = $this->config->delim;
         $delim = strtr($delimiter, array('CR+LF' => chr(13).chr(10), 'CR' => chr(13), 'LF' => chr(10)));
 
-        // Calculate a cohort names for user
+        // Calculate a cohort names for user.
         $replacements_tpl = $this->config->replace_arr;
 
         $replacements = array();
@@ -157,7 +157,7 @@ class auth_plugin_mcae extends auth_plugin_manual {
             };
         };
 
-        // Generate cohorts array
+        // Generate cohorts array.
         $main_rule = $this->config->mainrule_fld;
 
         $templates_tpl = array();
@@ -166,10 +166,10 @@ class auth_plugin_mcae extends auth_plugin_manual {
             $templates_tpl = explode($delim, $main_rule);
         } else {
             $SESSION->mcautoenrolled = TRUE;
-            return; //Empty mainrule
+            return; //Empty mainrule.
         };
 
-        // Find %split function
+        // Find %split function.
         foreach ($templates_tpl as $item) {
             if (preg_match('/(?<full>%split\((?<fld>\w*)\|(?<delim>.{1,5})\))/', $item, $split_params)) {
                 // Split!
@@ -185,8 +185,7 @@ class auth_plugin_mcae extends auth_plugin_manual {
 
         $processed = array();
 
-        // Process templates with Mustache
-        
+        // Process templates with Mustache.
 
         foreach ($templates as $cohort) {
             $cohortname = $this->mustache->render($cohort, $user_profile_data);
@@ -203,7 +202,7 @@ class auth_plugin_mcae extends auth_plugin_manual {
                     cohort_add_member($cid, $user->id);
                 };
             } else {
-                // Cohort not exist so create a new one
+                // Cohort not exist so create a new one.
                 $newcohort = new stdClass();
                 $newcohort->name = $cohortname;
                 $newcohort->description = "created ". date("d-m-Y");
@@ -213,22 +212,22 @@ class auth_plugin_mcae extends auth_plugin_manual {
                 };
                 $cid = cohort_add_cohort($newcohort);
                 cohort_add_member($cid, $user->id);
-				
-				// Prevent creation new cohorts with same names
-				$cohorts_list[$cid] = $cohortname;
+
+                // Prevent creation new cohorts with same names.
+                $cohorts_list[$cid] = $cohortname;
             };
             $processed[] = $cid;
         };
         $SESSION->mcautoenrolled = TRUE;
 
-        //Unenrol user
+        // Unenrol user.
         if ($this->config->enableunenrol == 1) {
-        //List of cohorts where this user enrolled
+            // List of cohorts where this user enrolled.
             $sql = "SELECT c.id AS cid FROM {cohort} c JOIN {cohort_members} cm ON cm.cohortid = c.id WHERE c.component = 'auth_mcae' AND cm.userid = $uid";
             $enrolledcohorts = $DB->get_records_sql($sql);
 
             foreach ($enrolledcohorts as $ec) {
-                if(array_search($ec->cid, $processed) === false) {
+                if (array_search($ec->cid, $processed) === false) {
                     cohort_remove_member($ec->cid, $uid);
                 };
             };
