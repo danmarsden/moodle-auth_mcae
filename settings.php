@@ -59,7 +59,7 @@ if ($ADMIN->fulltree) {
 
     // Email root domain.
     $emaildomainarray = explode('.', $emaildomain);
-    if(count($emaildomainarray) > 2) {
+    if (count($emaildomainarray) > 2) {
         $emailrootdomain = $emaildomainarray[count($emaildomainarray) - 2].'.'.
                            $emaildomainarray[count($emaildomainarray) - 1];
     } else {
@@ -79,7 +79,7 @@ if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_heading(
         'auth_mcae_profile_help',
         get_string('auth_profile_help', 'auth_mcae'),
-        $help_text)
+        $helptext)
     );
     $settings->add(new admin_setting_configselect(
         'auth_mcae/delim',

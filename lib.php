@@ -38,7 +38,7 @@ function mcae_prepare_profile_data($data, $replaceempty = 'EMPTY') {
                 if (is_array($val) or is_object($val)) {
                     $newdata[$key] = mcae_prepare_profile_data($val, $replaceempty);
                 } else {
-                    if ($val === '' or $val === ' ' or $val === NULL) {
+                    if ($val === '' or $val === ' ' or $val === null) {
                         $str = ($val === false) ? 'false' : $replaceempty;
                     } else {
                         $str = ($val === true) ? 'true' : format_string("$val");
@@ -48,7 +48,7 @@ function mcae_prepare_profile_data($data, $replaceempty = 'EMPTY') {
             }
         }
     } else {
-        if ($data === '' or $data === ' ' or $data === NULL) {
+        if ($data === '' or $data === ' ' or $data === null) {
             $str = ($data === false) ? 'false' : $replaceempty;
         } else {
             $str = ($data === true) ? 'true' : format_string("$data");

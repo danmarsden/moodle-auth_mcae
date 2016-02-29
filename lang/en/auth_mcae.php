@@ -32,7 +32,7 @@ $string['auth_delim_help'] = 'Different OS use different end of line delimiters.
 $string['auth_donttouchusers'] = 'Ignore users';
 $string['auth_donttouchusers_help'] = 'Comma-separated usernames.';
 $string['auth_enableunenrol'] = 'Enable / Disable automatic unenrol';
-$string['auth_tools_help'] = 'Unenrol function only works with cohorts associated with the module. With <a href="{$a->url}" target="_blank">this tool</a> you can convert / view / delete all cohorts you have.'; 
+$string['auth_tools_help'] = 'Unenrol function only works with cohorts associated with the module. With <a href="{$a->url}" target="_blank">this tool</a> you can convert / view / delete all cohorts you have.';
 $string['auth_cohorttoolmcae'] = 'Cohort operations';
 $string['auth_cohortviewmcae'] = 'Cohort viewer';
 $string['auth_selectcohort'] = 'Select cohort';

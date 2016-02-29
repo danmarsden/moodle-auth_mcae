@@ -51,7 +51,7 @@ class auth_plugin_mcae extends auth_plugin_manual {
      * Processes and stores configuration data for this authentication plugin.
      * $this->config->somefield
      */
-    function process_config($config) {
+    public function process_config($config) {
         // Set to defaults if undefined.
 
         if (!isset($config->mainrule_fld)) {
@@ -91,7 +91,7 @@ class auth_plugin_mcae extends auth_plugin_manual {
      * @param string $username (with system magic quotes)
      * @param string $password plain text password (with system magic quotes)
      */
-    function user_authenticated_hook(&$user, $username, $password) {
+    public function user_authenticated_hook(&$user, $username, $password) {
         global $DB, $SESSION;
 
         $context = context_system::instance();
@@ -137,7 +137,7 @@ class auth_plugin_mcae extends auth_plugin_manual {
         $emaildomainarray = explode('.', $emaildomain);
         if (count($emaildomainarray) > 2) {
             $emailrootdomain = $emaildomainarray[count($emaildomainarray) - 2].'.'.
-                               .$emaildomainarray[count($emaildomainarray) - 1];
+                               $emaildomainarray[count($emaildomainarray) - 1];
         } else {
             $emailrootdomain = $emaildomain;
         }
