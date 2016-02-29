@@ -27,6 +27,7 @@ require_once($CFG->libdir.'/authlib.php');
 require_once($CFG->dirroot.'/cohort/lib.php');
 require_once($CFG->dirroot.'/user/profile/lib.php');
 require_once($CFG->dirroot.'/auth/mcae/lib.php');
+require_once($CFG->dirroot.'/auth/manual/auth.php');
 
 class auth_plugin_mcae extends auth_plugin_manual {
 
