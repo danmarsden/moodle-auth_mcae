@@ -37,10 +37,10 @@ echo "Start transaction.\n";
 $transaction = $DB->start_delegated_transaction();
 
 foreach ($users as $user) {
-  $username = $user->username;
-  echo "  Update user $username . . . ";
-  $auth->user_authenticated_hook($user, $username, '');
-  echo "done.\n";
+    $username = $user->username;
+    echo "  Update user {$username} . . . ";
+    $auth->user_authenticated_hook($user, $username, '');
+    echo "done.\n";
 }
 
 $transaction->allow_commit();

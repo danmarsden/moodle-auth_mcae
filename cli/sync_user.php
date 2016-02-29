@@ -33,10 +33,10 @@ if (!is_enabled_auth('mcae')) {
 $username = cli_input('Username to update');
 
 if ($username) {
-  $auth = get_auth_plugin('mcae');
-  if ($user = $DB->get_record('user', array('username' => $username))) {
-    echo "Update user $username complete\n";
-    $auth->user_authenticated_hook($user, $username, '');
-  }
+    $auth = get_auth_plugin('mcae');
+    if ($user = $DB->get_record('user', array('username' => $username))) {
+        echo "Update user $username complete\n";
+        $auth->user_authenticated_hook($user, $username, '');
+    }
 }
 exit("\nFinish\n");

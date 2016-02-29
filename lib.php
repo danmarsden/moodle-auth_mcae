@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -30,36 +29,36 @@
  * @param array $data Complete $USER object with custom profile fields loaded
  * @return array Cleaned array created from $data
  */
-function mcae_prepare_profile_data($data, $replace_empty = 'EMPTY') {
+function mcae_prepare_profile_data($data, $replaceempty = 'EMPTY') {
     $reject = array('ajax_updatable_user_prefs', 'sesskey', 'preference', 'editing', 'access', 'message_lastpopup', 'enrol');
     if (is_array($data) or is_object($data)) {
-        $new_data = array();
+        $newdata = array();
         foreach ($data as $key => $val) {
             if (!in_array($key, $reject)) {
-				if (is_array($val) or is_object($val)) {
-					$new_data[$key] = mcae_prepare_profile_data($val, $replace_empty);
-				} else {
-					if ($val === '' or $val === ' ' or $val === NULL) {
-						$str = ($val === false) ? 'false' : $replace_empty;
-					} else {
-						$str = ($val === true) ? 'true' : format_string("$val");
-					}
-				    $new_data[$key] = substr($str, 0, 100);
-				}
+                if (is_array($val) or is_object($val)) {
+                    $newdata[$key] = mcae_prepare_profile_data($val, $replaceempty);
+                } else {
+                    if ($val === '' or $val === ' ' or $val === NULL) {
+                        $str = ($val === false) ? 'false' : $replaceempty;
+                    } else {
+                        $str = ($val === true) ? 'true' : format_string("$val");
+                    }
+                    $newdata[$key] = substr($str, 0, 100);
+                }
             }
         }
     } else {
-		if ($data === '' or $data === ' ' or $data === NULL) {
-		    $str = ($data === false) ? 'false' : $replace_empty;
-		} else {
-		    $str = ($data === true) ? 'true' : format_string("$data");
-		}
-        $new_data = substr($str, 0, 100);
+        if ($data === '' or $data === ' ' or $data === NULL) {
+            $str = ($data === false) ? 'false' : $replaceempty;
+        } else {
+            $str = ($data === true) ? 'true' : format_string("$data");
+        }
+        $newdata = substr($str, 0, 100);
     }
-    if (empty($new_data)) {
-        return $replace_empty;
+    if (empty($newdata)) {
+        return $replaceempty;
     } else {
-        return $new_data;
+        return $newdata;
     }
 }
 

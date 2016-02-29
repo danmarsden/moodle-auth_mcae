@@ -39,22 +39,22 @@ $clist = (isset($_POST['clist'])) ? $_POST['clist'] : false;
 
 switch ($action) {
     case 'list':
-        $cohorts = $DB->get_records('cohort', array('contextid'=>$context->id), 'name ASC');
-        $cohorts_list = array();
+        $cohorts = $DB->get_records('cohort', array('contextid' => $context->id), 'name ASC');
+        $cohortslist = array();
 
-        foreach($cohorts as $cohort) {
+        foreach ($cohorts as $cohort) {
             $cid = $cohort->id;
             $cname = format_string($cohort->name);
-            $cohorts_list[$cid]['name'] = $cname;
-            $cohorts_list[$cid]['component'] = $cohort->component;
-            $cohorts_list[$cid]['count'] = $DB->count_records('cohort_members', array('cohortid'=>$cid));
+            $cohortslist[$cid]['name'] = $cname;
+            $cohortslist[$cid]['component'] = $cohort->component;
+            $cohortslist[$cid]['count'] = $DB->count_records('cohort_members', array('cohortid' => $cid));
         }
 
         $row = array();
         $cell = array();
         $rownum = 0;
-        
-        foreach($cohorts_list as $key => $val) {
+
+        foreach ($cohortslist as $key => $val) {
             $color = ($val['component'] == 'auth_mcae') ? '#f4c430 !important' : '#e9967a !important';
             $viewurl = new moodle_url('/auth/mcae/view.php', array('cid' => $key));
 
@@ -79,19 +79,26 @@ switch ($action) {
         }
 
         $table = new html_table();
-        $table->head = array(get_string('auth_cohortname', 'auth_mcae'),get_string('auth_component', 'auth_mcae'), get_string('auth_count', 'auth_mcae'), get_string('auth_link', 'auth_mcae'));
+        $table->head = array(
+            get_string('auth_cohortname', 'auth_mcae'),
+            get_string('auth_component', 'auth_mcae'),
+            get_string('auth_count', 'auth_mcae'),
+            get_string('auth_link', 'auth_mcae')
+        );
         $table->width = '60%';
         $table->data = $row;
 
         echo $OUTPUT->header();
         echo $OUTPUT->heading(get_string('auth_cohorttoolmcae', 'auth_mcae'));
-        
+
         echo get_string('auth_cohortoper_help', 'auth_mcae');
-        echo "<form action=\"$returnurl\" method=\"POST\">";
+        echo "<form action=\"{$returnurl}\" method=\"POST\">";
 
         echo html_writer::table($table);
 
-        echo '<select name="action"><option value="do">Convert to auth_mcae</option><option value="restore">Convert to manual</option><option value="delete">Delete cohorts</option></select>';
+        echo '<select name="action"><option value="do">Convert to auth_mcae</option>'.
+             '<option value="restore">Convert to manual</option><option value="delete">'.
+             'Delete cohorts</option></select>';
         echo '<input type="submit" name="submit" value="Submit">';
         echo '</form>';
     break;
@@ -115,17 +122,16 @@ switch ($action) {
 
             echo $OUTPUT->header();
             echo $OUTPUT->heading(get_string('auth_cohorttoolmcae', 'auth_mcae'));
-            
+
             $progress = new progress_bar('delcohort');
             $progress->create();
             $delcount = count($clist);
             $delcurrent = 1;
 
-            foreach ($clist as $cid){
-                $cohort = $DB->get_record('cohort', array('contextid'=>$context->id, 'id' => $cid));
-				
+            foreach ($clist as $cid) {
+                $cohort = $DB->get_record('cohort', array('contextid' => $context->id, 'id' => $cid));
                 cohort_delete_cohort($cohort);
-                $progress->update($delcurrent, $delcount, "$delcurrent / $delcount");
+                $progress->update($delcurrent, $delcount, "{$delcurrent} / {$delcount}");
                 $delcurrent++;
             };
         };
@@ -136,5 +142,3 @@ switch ($action) {
 }
 
 echo $OUTPUT->footer();
-
-?>

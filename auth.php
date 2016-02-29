@@ -100,17 +100,17 @@ class auth_plugin_mcae extends auth_plugin_manual {
         $ignore = explode(",", $this->config->donttouchusers);
 
         if (!empty($ignore) AND array_search($username, $ignore) !== false) {
-            $SESSION->mcautoenrolled = TRUE;
+            $SESSION->mcautoenrolled = true;
             return true;
         };
 
         // Ignore guests.
         if (isguestuser($user)) {
-            $SESSION->mcautoenrolled = TRUE;
+            $SESSION->mcautoenrolled = true;
             return true;
         };
 
-        // ********************** Get COHORTS data.
+        // Get COHORTS data.
         $clause = array('contextid' => $context->id);
         if ($this->config->enableunenrol == 1) {
             $clause['component'] = self::COMPONENT_NAME;
@@ -118,66 +118,72 @@ class auth_plugin_mcae extends auth_plugin_manual {
 
         $cohorts = $DB->get_records('cohort', $clause);
 
-        $cohorts_list = array();
+        $cohortslist = array();
         foreach ($cohorts as $cohort) {
             $cid = $cohort->id;
             $cname = format_string($cohort->name);
-            $cohorts_list[$cid] = $cname;
+            $cohortslist[$cid] = $cname;
         }
 
         // Get advanced user data.
         profile_load_data($user);
         profile_load_custom_fields($user);
-        $user_profile_data = mcae_prepare_profile_data($user, $this->config->secondrule_fld);
+        $userprofiledata = mcae_prepare_profile_data($user, $this->config->secondrule_fld);
 
         // Additional values for email.
-        list($email_username,$email_domain) = explode("@", $user_profile_data['email']);
+        list($emailusername, $emaildomain) = explode("@", $userprofiledata['email']);
 
         // Email root domain.
-        $email_domain_array = explode('.',$email_domain);
-        if (count($email_domain_array) > 2) {
-            $email_rootdomain = $email_domain_array[count($email_domain_array) - 2].'.'.$email_domain_array[count($email_domain_array) - 1];
+        $emaildomainarray = explode('.', $emaildomain);
+        if (count($emaildomainarray) > 2) {
+            $emailrootdomain = $emaildomainarray[count($emaildomainarray) - 2].'.'.
+                               .$emaildomainarray[count($emaildomainarray) - 1];
         } else {
-            $email_rootdomain = $email_domain;
+            $emailrootdomain = $emaildomain;
         }
-        $user_profile_data['email'] = array('full' => $user_profile_data['email'], 'username' => $email_username, 'domain' => $email_domain, 'rootdomain' => $email_rootdomain);
+        $userprofiledata['email'] = array(
+            'full' => $userprofiledata['email'],
+            'username' => $emailusername,
+            'domain' => $emaildomain,
+            'rootdomain' => $emailrootdomain
+        );
 
-        // Delimiter
+        // Delimiter.
         $delimiter = $this->config->delim;
         $delim = strtr($delimiter, array('CR+LF' => chr(13).chr(10), 'CR' => chr(13), 'LF' => chr(10)));
 
         // Calculate a cohort names for user.
-        $replacements_tpl = $this->config->replace_arr;
+        $replacementstemplate = $this->config->replace_arr;
 
         $replacements = array();
-        if (!empty($replacements_tpl)) {
-            $replacements_pre = explode($delim, $replacements_tpl);
-            foreach ($replacements_pre as $rap) {
-                list($key, $val) = explode("|", $rap);
+        if (!empty($replacementstemplate)) {
+            $replacementsarray = explode($delim, $replacementstemplate);
+            foreach ($replacementsarray as $replacement) {
+                list($key, $val) = explode("|", $replacement);
                 $replacements[$key] = $val;
             };
         };
 
         // Generate cohorts array.
-        $main_rule = $this->config->mainrule_fld;
+        $mainrule = $this->config->mainrule_fld;
 
-        $templates_tpl = array();
+        $mainrulearray = array();
         $templates = array();
-        if (!empty($main_rule)) {
-            $templates_tpl = explode($delim, $main_rule);
+        if (!empty($mainrule)) {
+            $mainrulearray = explode($delim, $mainrule);
         } else {
-            $SESSION->mcautoenrolled = TRUE;
-            return; //Empty mainrule.
+            $SESSION->mcautoenrolled = true;
+            return; // Empty mainrule.
         };
 
         // Find %split function.
-        foreach ($templates_tpl as $item) {
-            if (preg_match('/(?<full>%split\((?<fld>\w*)\|(?<delim>.{1,5})\))/', $item, $split_params)) {
+        foreach ($mainrulearray as $item) {
+            if (preg_match('/(?<full>%split\((?<fld>\w*)\|(?<delim>.{1,5})\))/', $item, $splitparams)) {
                 // Split!
-                $splitted = explode($split_params['delim'], $user_profile_data[$split_params['fld']]);
-                foreach($splitted as $key => $val) {
-                    $user_profile_data[$split_params['fld']."_$key"] = $val;
-                    $templates[] = strtr($item, array("${split_params['full']}" => "{{ ${split_params['fld']}_$key }}"));
+                $splitted = explode($splitparams['delim'], $userprofiledata[$splitparams['fld']]);
+                foreach ($splitted as $key => $val) {
+                    $userprofiledata[$splitparams['fld']."_$key"] = $val;
+                    $templates[] = strtr($item, array("{$splitparams['full']}" => "{{ ".$splitparams['fld']."_$key }}"));
                 }
             } else {
                 $templates[] = $item;
@@ -187,16 +193,15 @@ class auth_plugin_mcae extends auth_plugin_manual {
         $processed = array();
 
         // Process templates with Mustache.
-
         foreach ($templates as $cohort) {
-            $cohortname = $this->mustache->render($cohort, $user_profile_data);
+            $cohortname = $this->mustache->render($cohort, $userprofiledata);
             $cohortname = (!empty($replacements)) ? strtr($cohortname, $replacements) : $cohortname;
 
             if ($cohortname == '') {
-                continue; // We don't want an empty cohort name
+                continue; // We don't want an empty cohort name.
             };
 
-            $cid = array_search($cohortname, $cohorts_list);
+            $cid = array_search($cohortname, $cohortslist);
             if ($cid !== false) {
 
                 if (!$DB->record_exists('cohort_members', array('cohortid' => $cid, 'userid' => $user->id))) {
@@ -206,7 +211,7 @@ class auth_plugin_mcae extends auth_plugin_manual {
                 // Cohort not exist so create a new one.
                 $newcohort = new stdClass();
                 $newcohort->name = $cohortname;
-                $newcohort->description = "created ". date("d-m-Y");
+                $newcohort->description = "created ".date("d-m-Y");
                 $newcohort->contextid = $context->id;
                 if ($this->config->enableunenrol == 1) {
                     $newcohort->component = "auth_mcae";
@@ -215,16 +220,20 @@ class auth_plugin_mcae extends auth_plugin_manual {
                 cohort_add_member($cid, $user->id);
 
                 // Prevent creation new cohorts with same names.
-                $cohorts_list[$cid] = $cohortname;
+                $cohortslist[$cid] = $cohortname;
             };
             $processed[] = $cid;
         };
-        $SESSION->mcautoenrolled = TRUE;
+        $SESSION->mcautoenrolled = true;
 
         // Unenrol user.
         if ($this->config->enableunenrol == 1) {
             // List of cohorts where this user enrolled.
-            $sql = "SELECT c.id AS cid FROM {cohort} c JOIN {cohort_members} cm ON cm.cohortid = c.id WHERE c.component = 'auth_mcae' AND cm.userid = ?";
+            $sql = "SELECT c.id AS cid
+                      FROM {cohort} c
+                      JOIN {cohort_members} cm ON cm.cohortid = c.id
+                    WHERE c.component = 'auth_mcae' AND cm.userid = ?";
+
             $enrolledcohorts = $DB->get_records_sql($sql, array($uid));
 
             foreach ($enrolledcohorts as $ec) {
