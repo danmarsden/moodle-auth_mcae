@@ -1,3 +1,8 @@
+Version 3.1
+- Add CLI scripts
+- Add Travis CI
+- Fix missing requre_once
+
 Version 3.0
 - Minor fixes
 
