@@ -14,17 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * @package    auth
- * @subpackage mcae
- * @copyright  2011 Andrew "Kama" (kamasutra12@yandex.ru)
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
-defined('MOODLE_INTERNAL') || die();
-
-$plugin->version   = 2016022901;
-$plugin->component = 'auth_mcae';
-$plugin->maturity = MATURITY_STABLE;
-$plugin->requires = 2015102300;
-$plugin->release = '3.1';
+$observers = array (
+    array(
+        'eventname' => '\core\event\user_created',
+        'callback' => 'auth_mcae_observer::user_created'
+    ),
+    array(
+        'eventname' => '\core\event\user_updated',
+        'callback' => 'auth_mcae_observer::user_updated'
+    ));
