@@ -48,7 +48,7 @@ if ($ADMIN->fulltree) {
 
     // Profile field helper.
     $fldlist = array();
-    $usrhelper = $DB->get_record('user', array('id' => 2));
+    $usrhelper = get_admin();
 
     profile_load_data($usrhelper);
     profile_load_custom_fields($usrhelper);
