@@ -213,6 +213,7 @@ class auth_plugin_mcae extends auth_plugin_manual {
                 $newcohort->name = $cohortname;
                 $newcohort->description = "created ".date("d-m-Y");
                 $newcohort->contextid = $context->id;
+                $newcohort->idnumber = '';
                 if ($this->config->enableunenrol == 1) {
                     $newcohort->component = "auth_mcae";
                 };
